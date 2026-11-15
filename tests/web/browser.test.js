@@ -19,13 +19,13 @@ const CHROME = [
   '/usr/bin/chromium',
 ].find((candidate) => candidate && fs.existsSync(candidate));
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml' };
-const DINNER = '# Dinner\nana 60 ana ben cy\nben 30 ben cy\n';
+const DINNER = '# Dinner\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\n';
 const DINNER_REPORT = [
   'Dinner', '',
   'PAYMENTS',
-  'cy pays ana 35.00', 'ben pays ana 5.00', '',
+  'Chloe pays Anna 35.00', 'Ben pays Anna 5.00', '',
   'BALANCES',
-  'ana gets 40.00', 'ben owes 5.00', 'cy owes 35.00', '',
+  'Anna gets 40.00', 'Ben owes 5.00', 'Chloe owes 35.00', '',
   '3 people, 2 payments, total 0.00',
 ].join('\n') + '\n';
 
@@ -435,7 +435,7 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
       const report = await page.eval("document.getElementById('report').textContent");
       assert.match(report, /Invalid amount: some in line: just some notes/);
       assert.match(report, /Nothing to calculate yet/);
-      assert.match(report, /ana 60 ana ben cy/);
+      assert.match(report, /Anna 60 Anna Ben Chloe/);
       assert.doesNotMatch(report, /SUMMARY|BALANCES|TOTAL|PAYMENTS/);
     });
 
@@ -482,7 +482,7 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
 
     it('reports invalid lines and still calculates the valid ones', async () => {
       const { page } = await openApp(1280, 800);
-      await page.setInput('ana sixty ana\nana 60 ana ben cy\nben 30 ben cy\n');
+      await page.setInput('ana sixty ana\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\n');
       await page.click('#calculate');
       const report = await page.eval("document.getElementById('report').textContent");
       assert.match(report, /Invalid amount: sixty/);
@@ -636,10 +636,10 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
       const { page, downloads } = await openApp(1280, 800);
       await page.setInput(DINNER);
       await page.click('#calculate');
-      await page.setInput(DINNER + 'cy 10 cy ana\n');
+      await page.setInput(DINNER + 'Chloe 10 Chloe Anna\n');
       await page.click('#download');
       const [name] = await waitForDownload(downloads);
-      assert.match(fs.readFileSync(path.join(downloads, name), 'utf8'), /\nEXPENSES\n# Dinner\nana 60 ana ben cy\nben 30 ben cy\ncy 10 cy ana\n$/);
+      assert.match(fs.readFileSync(path.join(downloads, name), 'utf8'), /\nEXPENSES\n# Dinner\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\nChloe 10 Chloe Anna\n$/);
     });
 
     it('downloads an untitled file under the expenses name', async () => {
