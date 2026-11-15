@@ -5,7 +5,7 @@ All notable changes to this project are listed here. The format follows [Keep a 
 ## [Unreleased]
 
 ### Changed
-- Each section heading is now followed by a short description after a dash, such as `PAYMENTS - who pays whom to settle up`. The EXPENSES heading in the web Download does too.
+- Each section heading is now followed by a short description after a dash, such as `PAYMENTS - who pays whom`. The EXPENSES heading in the web Download does too.
 
 ## [4.0.0] - 2026-11-16
 

@@ -210,7 +210,7 @@
 
   // The report first, then the expenses it was made from, so the file explains itself
   download.addEventListener('click', () => {
-    const text = `${Balanzo.run(input.value).text}\nEXPENSES - the expenses this report was made from\n${input.value}`;
+    const text = `${Balanzo.run(input.value).text}\nEXPENSES - the expenses behind this report\n${input.value}`;
     const url = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
     const link = document.createElement('a');
     link.href = url;
