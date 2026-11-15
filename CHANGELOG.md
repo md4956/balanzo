@@ -2,10 +2,11 @@
 
 All notable changes to this project are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and version numbers follow [Semantic Versioning](https://semver.org/). Versions before 1.0.0 may change behavior in a minor release.
 
-## [Unreleased]
+## [4.0.0] - 2026-11-16
 
 ### Changed
 - Renamed the project to Balanzo. The script is now `balanzo.py`, the web page is titled Balanzo, and the browser script is `docs/balanzo.js`. The output and the rules for writing expenses are unchanged.
+- Breaking: `simple-spliito.py` no longer exists. Run `python3 balanzo.py`, and download `balanzo.py` from the latest release.
 
 ## [3.1.0] - 2026-11-15
 
