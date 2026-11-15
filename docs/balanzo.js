@@ -176,14 +176,14 @@
       const head = hashAt === -1 ? rawLine : rawLine.slice(0, hashAt);
       const line = head.trim();
       if (hashAt !== -1 && !['', ' ', '\t'].includes(head.slice(-1))) {
-        print(`Warning: '#' right after a name starts a comment: ${rawLine.trim()}`);
+        print(`Warning: '#' right after a name starts a comment, so the rest of the line is ignored: ${rawLine.trim()}`);
       }
       if (!line) continue;
 
       if (line.startsWith('@')) {
         const codes = line.slice(1).split(/\s+/).filter(Boolean);
         if (codes.length > 1) {
-          print(`Invalid currency: ${line}`);
+          print(`Invalid currency: ${line}. Use one code, such as @EUR, or @ on its own.`);
           continue;
         }
         currency = codes[0] || '';
@@ -192,7 +192,7 @@
 
       const parts = line.split(/\s+/);
       if (parts.length < 3) {
-        print(`Invalid line: ${line}`);
+        print(`Invalid line: ${line}. A line needs a payer, an amount and at least one name.`);
         continue;
       }
       const payer = parts[0];
@@ -203,13 +203,13 @@
       }
       const relatedTo = parts.slice(2).join(',').split(',').filter(Boolean);
       if (!relatedTo.length) {
-        print(`Invalid related_to list in line: ${line}`);
+        print(`Invalid line: ${line}. Name at least one person to share the amount.`);
         continue;
       }
 
       const names = [payer, ...relatedTo];
       if (names.some((name) => name.includes('*') || name.includes('~'))) {
-        print(`Error: '*' and '~' are not allowed in names: ${line}`);
+        print(`Error: '*' and '~' are not allowed in names. No report was made. Remove them and run again: ${line}`);
         return { text: emit([['WARNINGS', ...warnings]]), ok: false };
       }
       if (names.some((name) => name.includes('_'))) {

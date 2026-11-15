@@ -252,7 +252,7 @@ class InputParsingTests(unittest.TestCase):
 
     def test_only_comma_is_an_invalid_related_list(self):
         stdout, _ = run_script("nik 100 ,\n")
-        self.assertIn("Invalid related_to list in line: nik 100 ,", stdout)
+        self.assertIn("Invalid line: nik 100 ,. Name at least one person", stdout)
 
     def test_non_finite_amounts_are_rejected(self):
         for amount in ["nan", "inf", "-inf", "Infinity", "1e999"]:

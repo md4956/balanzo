@@ -185,11 +185,27 @@ How to read the output:
 - If nothing is owed, the payments section says `Everyone is settled.`
 - **BALANCES** lists everyone, largest first. `gets` means the person should receive money, and `owes` means they should pay. A person with nothing to settle shows `is settled`.
 - The last line gives the number of people and payments, and the total. The total should always be `0.00`, because every expense takes money from the people who share it and gives it to the payer. If it isn't, the script has a calculation bug, not a problem with your input.
-- **WARNINGS**, when there are any, comes last. It lists the lines that were skipped and the notes about names and the title, each with the line it refers to.
+- **WARNINGS**, when there are any, comes last. It lists the lines that were skipped and the notes about names and the title, each followed by the line it is about. See [When something looks wrong](#when-something-looks-wrong).
 
 The output is plain text with short lines and no decoration, so it reads the same when pasted into a messenger or viewed on a narrow phone screen. The web page, the file and the command line all print this same format.
 
 The format is versioned. This README describes version 4.0.0 (see the [changelog](CHANGELOG.md)).
+
+## When something looks wrong
+
+Every message under WARNINGS names the line it is about, so find that line and fix it:
+
+| Message | What to do |
+| --- | --- |
+| `Invalid line: ... A line needs a payer, an amount and at least one name.` | Write the line as `payer amount who shares it`. The line is skipped. |
+| `Invalid line: ... Name at least one person to share the amount.` | Add a name after the amount. The line is skipped. |
+| `Invalid amount: ...` | Use a plain number such as `60` or `362.75`. The line is skipped. |
+| `Invalid currency: ...` | Use one code, such as `@EUR`, or `@` on its own. The line is skipped. |
+| `Warning: '#' right after a name starts a comment, so the rest of the line is ignored` | Names can't contain `#`. Remove it from the name. Everything after a `#` is ignored, so the expense is read only up to it. |
+| `Error: '*' and '~' are not allowed in names. No report was made.` | Remove the `*` or `~` and run again. Nothing is printed except the warnings. |
+| `Note: more than 18 people ...` | The payments are correct, but there may be more of them than the fewest possible. |
+
+On the web page, the status line says `No report yet` when the report stopped with an error, and `Report updated.` only when it is complete.
 
 ## Versions and releases
 

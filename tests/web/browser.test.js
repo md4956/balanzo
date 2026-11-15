@@ -459,6 +459,13 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
       assert.match(await page.eval("document.getElementById('status').textContent"), /Press Calculate/);
     });
 
+    it('says no report was made, instead of "Report updated.", when a name has * in it', async () => {
+      const { page } = await openApp(1280, 800);
+      await page.setInput('ana 10 ana*\n');
+      await page.click('#calculate');
+      assert.match(await page.eval("document.getElementById('status').textContent"), /^No report yet\. Fix the line named under WARNINGS/);
+    });
+
     it('updates the report, flashes it and clears the stale state on Calculate', async () => {
       const { page } = await openApp(1280, 800);
       await page.setInput(DINNER);

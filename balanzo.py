@@ -159,20 +159,20 @@ def main():
                 head, comment_start, _ = raw_line.partition('#')
                 line = head.strip()
                 if comment_start and head[-1:] not in ('', ' ', '\t'):
-                    warnings.append(f"Warning: '#' right after a name starts a comment: {raw_line.strip()}")
+                    warnings.append(f"Warning: '#' right after a name starts a comment, so the rest of the line is ignored: {raw_line.strip()}")
                 if not line:
                     continue
                 if line.startswith('@'):
                     codes = line[1:].split()
                     if len(codes) > 1:
-                        warnings.append(f"Invalid currency: {line}")
+                        warnings.append(f"Invalid currency: {line}. Use one code, such as @EUR, or @ on its own.")
                         continue
                     currency = codes[0] if codes else ''
                     continue
 
                 parts = line.split()
                 if len(parts) < 3:
-                    warnings.append(f"Invalid line: {line}")
+                    warnings.append(f"Invalid line: {line}. A line needs a payer, an amount and at least one name.")
                     continue
                 payer = parts[0]
                 try:
@@ -185,12 +185,12 @@ def main():
                 related_to = [p for p in ','.join(parts[2:]).split(',') if p]
 
                 if not related_to:
-                    warnings.append(f"Invalid related_to list in line: {line}")
+                    warnings.append(f"Invalid line: {line}. Name at least one person to share the amount.")
                     continue
 
                 names = [payer, *related_to]
                 if any('*' in name or '~' in name for name in names):
-                    warnings.append(f"Error: '*' and '~' are not allowed in names: {line}")
+                    warnings.append(f"Error: '*' and '~' are not allowed in names. No report was made. Remove them and run again: {line}")
                     emit([["WARNINGS", *warnings]])  # no report, because the expenses are incomplete
                     sys.exit(1)
                 if any('_' in name for name in names):

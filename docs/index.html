@@ -93,11 +93,14 @@
   const report = document.getElementById('report');
   const status = document.getElementById('status');
   let calculatedText = null;  // the input the report was made from
+  let calculatedOk = true;    // false when the last calculation stopped with an error
   let fileExt = '.txt';       // extension of the last loaded file, so Download keeps it
   const download = document.getElementById('download');
 
   function calculate() {
-    report.textContent = Balanzo.run(input.value).text;
+    const result = Balanzo.run(input.value);
+    report.textContent = result.text;
+    calculatedOk = result.ok;
     report.classList.remove('placeholder');
     calculatedText = input.value;
     updateStale();
@@ -113,7 +116,8 @@
     if (calculatedText === null) return;
     const stale = input.value !== calculatedText;
     report.classList.toggle('stale', stale);
-    status.textContent = stale ? 'Text changed. Press Calculate to update the report.' : 'Report updated.';
+    if (stale) status.textContent = 'Text changed. Press Calculate to update the report.';
+    else status.textContent = calculatedOk ? 'Report updated.' : 'No report yet. Fix the line named under WARNINGS, then press Calculate.';
   }
 
   // Download needs a calculation first, and some text to save; otherwise it would save an empty file
@@ -203,6 +207,7 @@
       range.selectNodeContents(report);
       getSelection().removeAllRanges();
       getSelection().addRange(range);
+      status.textContent = 'Copying is blocked here. The report is selected: press Ctrl+C or ⌘+C to copy it.';
       return;
     }
     setTimeout(() => { button.textContent = 'Copy report'; }, 1500);
