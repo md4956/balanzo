@@ -1,4 +1,4 @@
-# simple-spliito
+# balanzo
 
 A small tool for splitting shared expenses. You write down who paid what and who it was for in a text file (`.txt` or `.md`). It prints the fewest payments that settle everyone up, and each person's balance.
 
@@ -22,7 +22,7 @@ The page shows the same report as the script. How to write the expenses is expla
 
 ## Quick start
 
-Download `simple-spliito.py` from the [latest release](https://github.com/md4956/simple-spliito/releases/latest), or clone the repo.
+Download `balanzo.py` from the [latest release](https://github.com/md4956/simple-spliito/releases/latest), or clone the repo.
 
 Save this as `dinner.txt` (or `dinner.md`, which works the same way):
 
@@ -35,7 +35,7 @@ ben 30 ben cy
 Run it:
 
 ```bash
-python3 simple-spliito.py dinner.txt
+python3 balanzo.py dinner.txt
 ```
 
 To run the tests (they only use the Python standard library):
@@ -147,7 +147,7 @@ Expenses before the first `@` line, and after an `@` line with nothing after it,
 [`example-expenses.txt`](example-expenses.txt) uses every input feature. [`example-expenses.md`](example-expenses.md) is the same file as Markdown:
 
 ```bash
-python3 simple-spliito.py example-expenses.txt
+python3 balanzo.py example-expenses.txt
 ```
 
 ```
@@ -193,7 +193,7 @@ The format is versioned. This README describes version 3.1.0 (see the [changelog
 
 ## Versions and releases
 
-Each version in [CHANGELOG.md](CHANGELOG.md) has a [GitHub release](https://github.com/md4956/simple-spliito/releases) with `simple-spliito.py` attached. The newest version is marked as the latest release, and that's the one the download link above points to.
+Each version in [CHANGELOG.md](CHANGELOG.md) has a [GitHub release](https://github.com/md4956/simple-spliito/releases) with `balanzo.py` attached. The newest version is marked as the latest release, and that's the one the download link above points to.
 
 Releases are automatic. When a change that adds a version is merged to `main`, the release workflow (`.github/workflows/release.yml`) creates that version's release, with its CHANGELOG section as the notes. Pushes that don't add a version create nothing.
 

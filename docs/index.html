@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
-<title>simple-spliito</title>
+<title>balanzo</title>
 <style>
   :root {
     color-scheme: light dark;
@@ -62,7 +62,7 @@
 </head>
 <body>
 <main>
-  <h1>simple-spliito</h1>
+  <h1>balanzo</h1>
   <p class="status" id="status"></p>
 
   <div class="workspace">
@@ -87,7 +87,7 @@
 </main>
 <div id="drop">Drop the .txt or .md file here</div>
 
-<script src="spliito.js"></script>
+<script src="balanzo.js"></script>
 <script>
   const input = document.getElementById('input');
   const report = document.getElementById('report');
@@ -97,7 +97,7 @@
   const download = document.getElementById('download');
 
   function calculate() {
-    report.textContent = Spliito.run(input.value).text;
+    report.textContent = Balanzo.run(input.value).text;
     report.classList.remove('placeholder');
     calculatedText = input.value;
     updateStale();
@@ -210,7 +210,7 @@
 
   // The report first, then the expenses it was made from, so the file explains itself
   download.addEventListener('click', () => {
-    const text = `${Spliito.run(input.value).text}\nEXPENSES\n${input.value}`;
+    const text = `${Balanzo.run(input.value).text}\nEXPENSES\n${input.value}`;
     const url = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
     const link = document.createElement('a');
     link.href = url;

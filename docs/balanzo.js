@@ -1,4 +1,4 @@
-// Browser and Node port of simple-spliito.py. Keep it in step with the script:
+// Browser and Node port of balanzo.py. Keep it in step with the script:
 // tests/test_web_port.py runs both on the same inputs and compares the output.
 (function () {
   const EPSILON = 0.0001;
@@ -245,7 +245,7 @@
     return { text: emit(blocks), ok: true };
   }
 
-  const Spliito = { run };
-  if (typeof module !== 'undefined') module.exports = Spliito;
-  else globalThis.Spliito = Spliito;
+  const Balanzo = { run };
+  if (typeof module !== 'undefined') module.exports = Balanzo;
+  else globalThis.Balanzo = Balanzo;
 })();
