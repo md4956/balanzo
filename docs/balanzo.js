@@ -119,7 +119,7 @@
     const suffix = unit ? ` ${unit}` : '';
     const headingSuffix = label ? ` (${label})` : '';
 
-    const payments = [`PAYMENTS${headingSuffix}`];
+    const payments = [`PAYMENTS${headingSuffix} - who pays whom`];
     if (!transactions.length) {
       payments.push('Everyone is settled.');
     } else {
@@ -142,7 +142,7 @@
       }
     }
 
-    const balanceLines = [`BALANCES${headingSuffix}`];
+    const balanceLines = [`BALANCES${headingSuffix} - who gets or owes`];
     for (const [person, balance] of [...balances].sort((a, b) => b[1] - a[1])) {
       if (Math.abs(balance) < 0.005) balanceLines.push(`${person} is settled`);
       else if (balance > 0) balanceLines.push(`${person} gets ${money(balance)}${suffix}`);

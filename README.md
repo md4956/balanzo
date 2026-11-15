@@ -55,11 +55,11 @@ You get:
 ```
 Dinner
 
-PAYMENTS
+PAYMENTS - who pays whom
 Chloe pays Anna 35.00
 Ben pays Anna 5.00
 
-BALANCES
+BALANCES - who gets or owes
 Anna gets 40.00
 Ben owes 5.00
 Chloe owes 35.00
@@ -119,21 +119,21 @@ Tyler 40 Tyler Chloe
 ```
 Trip, two currencies
 
-PAYMENTS (EUR)
+PAYMENTS (EUR) - who pays whom
 Emma pays Lukas 25.00 EUR
 Emma pays Anna 15.00 EUR
 
-BALANCES (EUR)
+BALANCES (EUR) - who gets or owes
 Lukas gets 25.00 EUR
 Anna gets 15.00 EUR
 Emma owes 40.00 EUR
 
 3 people, 2 payments, total 0.00 EUR
 
-PAYMENTS (NO CURRENCY)
+PAYMENTS (NO CURRENCY) - who pays whom
 Chloe pays Tyler 20.00
 
-BALANCES (NO CURRENCY)
+BALANCES (NO CURRENCY) - who gets or owes
 Tyler gets 20.00
 Chloe owes 20.00
 
@@ -153,7 +153,7 @@ python3 balanzo.py example-expenses.txt
 ```
 Weekend trip expenses
 
-PAYMENTS
+PAYMENTS - who pays whom
 Olivia pays Jake 931.79
 Ben pays Jake 842.33
 Anna pays Lena 696.67
@@ -164,7 +164,7 @@ Mateo pays Lena 14.58
 Marco pays Emma 246.54
 Marco pays Lena 1.25
 
-BALANCES
+BALANCES - who gets or owes
 Jake gets 1,816.58
 Hannah gets 730.67
 Lena gets 712.50
@@ -181,6 +181,7 @@ Olivia owes 931.79
 
 How to read the output:
 
+- Each heading is a name, then a dash and a short description of what the section holds, such as `PAYMENTS - who pays whom`.
 - **PAYMENTS** comes first, one payment per line. Read this section first: it's enough to settle the trip. People who pay only once are listed first, sorted by amount. Then each person who pays several times, also sorted by amount, so their payments are next to each other.
 - If nothing is owed, the payments section says `Everyone is settled.`
 - **BALANCES** lists everyone, largest first. `gets` means the person should receive money, and `owes` means they should pay. A person with nothing to settle shows `is settled`.
@@ -189,7 +190,7 @@ How to read the output:
 
 The output is plain text with short lines and no decoration, so it reads the same when pasted into a messenger or viewed on a narrow phone screen. The web page, the file and the command line all print this same format.
 
-The format is versioned. This README describes version 4.0.0 (see the [changelog](CHANGELOG.md)).
+The format is versioned. This README describes version 4.1.0 (see the [changelog](CHANGELOG.md)).
 
 ## Versions and releases
 
