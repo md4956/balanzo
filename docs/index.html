@@ -13,6 +13,7 @@
   :root {
     color-scheme: light dark;
     --bg: #f6f7f9; --fg: #1d1f23; --muted: #6b7280; --card: #ffffff; --accent: #2f6fed; --line: #d9dce1;
+    --box-h: 320px;  /* input and report share this height, so their edges and button rows line up */
   }
   @media (prefers-color-scheme: dark) {
     :root { --bg: #16181d; --fg: #eceef2; --muted: #9aa1ad; --card: #21242b; --accent: #6ea0ff; --line: #383d47; }
@@ -22,12 +23,13 @@
   main { max-width: 1200px; margin: 0 auto; padding: 16px; }
   h1 { font-size: 1.4rem; margin: 8px 0 12px; }
   textarea, pre {
-    width: 100%; background: var(--card); color: var(--fg);
+    width: 100%; height: var(--box-h); background: var(--card); color: var(--fg);
     border: 1px solid var(--line); border-radius: 10px; padding: 12px;
     font-family: ui-monospace, Menlo, monospace;
   }
-  textarea { min-height: 220px; font-size: 16px; line-height: 1.4; resize: vertical; }
-  pre { margin: 0; min-height: 220px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+  /* Both 16px: iOS zooms in on an input under 16px, and one size keeps the two boxes reading the same */
+  textarea { display: block; font-size: 16px; line-height: 1.5; resize: none; }  /* block: an inline box leaves a gap under it that pre does not */
+  pre { margin: 0; overflow: auto; font-size: 16px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
   pre.placeholder { color: var(--muted); }
   pre.stale { opacity: 0.55; }
   pre.updated { animation: flash 1.2s ease-out; }
@@ -51,16 +53,16 @@
   }
   body.dragging #drop { display: flex; }
   @media (min-width: 900px) {
+    :root { --box-h: max(480px, 70vh); }
     main { padding: 24px; }
     .workspace { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
-    textarea { min-height: 480px; }
-    pre { min-height: 480px; }
   }
 </style>
 </head>
 <body>
 <main>
   <h1>simple-spliito</h1>
+  <p class="status" id="status"></p>
 
   <div class="workspace">
     <section class="input">
@@ -74,7 +76,6 @@
     </section>
 
     <section class="output">
-      <p class="status" id="status"></p>
       <pre id="report" class="placeholder" aria-live="polite">The report appears here.</pre>
       <div class="row">
         <button id="copy">Copy report</button>
