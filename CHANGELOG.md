@@ -5,7 +5,7 @@ All notable changes to this project are listed here. The format follows [Keep a 
 ## [Unreleased]
 
 ### Changed
-- Each section heading now starts with a short description, such as `Who pays whom to settle up: PAYMENTS`. The EXPENSES heading in the web Download does too.
+- Each section heading now starts with a short description, such as `PAYMENTS - who pays whom to settle up`. The EXPENSES heading in the web Download does too.
 
 ## [4.0.0] - 2026-11-16
 

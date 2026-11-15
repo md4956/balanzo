@@ -22,9 +22,9 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'applic
 const DINNER = '# Dinner\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\n';
 const DINNER_REPORT = [
   'Dinner', '',
-  'Who pays whom to settle up: PAYMENTS',
+  'PAYMENTS - who pays whom to settle up',
   'Chloe pays Anna 35.00', 'Ben pays Anna 5.00', '',
-  'What each person gets back or owes: BALANCES',
+  'BALANCES - what each person gets back or owes',
   'Anna gets 40.00', 'Ben owes 5.00', 'Chloe owes 35.00', '',
   '3 people, 2 payments, total 0.00',
 ].join('\n') + '\n';
@@ -629,7 +629,7 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
       await page.click('#download');
       const [name] = await waitForDownload(downloads);
       assert.match(name, /^Dinner-\d{4}-\d{2}-\d{2}-\d{4}\.txt$/);
-      assert.equal(fs.readFileSync(path.join(downloads, name), 'utf8'), DINNER_REPORT + '\nThe expenses this report was made from: EXPENSES\n' + DINNER);
+      assert.equal(fs.readFileSync(path.join(downloads, name), 'utf8'), DINNER_REPORT + '\nEXPENSES - the expenses this report was made from\n' + DINNER);
     });
 
     it('downloads the report of the text in the box, even when it changed after Calculate', async () => {
@@ -639,7 +639,7 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
       await page.setInput(DINNER + 'Chloe 10 Chloe Anna\n');
       await page.click('#download');
       const [name] = await waitForDownload(downloads);
-      assert.match(fs.readFileSync(path.join(downloads, name), 'utf8'), /\nThe expenses this report was made from: EXPENSES\n# Dinner\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\nChloe 10 Chloe Anna\n$/);
+      assert.match(fs.readFileSync(path.join(downloads, name), 'utf8'), /\nEXPENSES - the expenses this report was made from\n# Dinner\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\nChloe 10 Chloe Anna\n$/);
     });
 
     it('downloads an untitled file under the expenses name', async () => {

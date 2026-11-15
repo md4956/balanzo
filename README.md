@@ -55,11 +55,11 @@ You get:
 ```
 Dinner
 
-Who pays whom to settle up: PAYMENTS
+PAYMENTS - who pays whom to settle up
 Chloe pays Anna 35.00
 Ben pays Anna 5.00
 
-What each person gets back or owes: BALANCES
+BALANCES - what each person gets back or owes
 Anna gets 40.00
 Ben owes 5.00
 Chloe owes 35.00
@@ -119,21 +119,21 @@ Tyler 40 Tyler Chloe
 ```
 Trip, two currencies
 
-Who pays whom to settle up: PAYMENTS (EUR)
+PAYMENTS (EUR) - who pays whom to settle up
 Emma pays Lukas 25.00 EUR
 Emma pays Anna 15.00 EUR
 
-What each person gets back or owes: BALANCES (EUR)
+BALANCES (EUR) - what each person gets back or owes
 Lukas gets 25.00 EUR
 Anna gets 15.00 EUR
 Emma owes 40.00 EUR
 
 3 people, 2 payments, total 0.00 EUR
 
-Who pays whom to settle up: PAYMENTS (NO CURRENCY)
+PAYMENTS (NO CURRENCY) - who pays whom to settle up
 Chloe pays Tyler 20.00
 
-What each person gets back or owes: BALANCES (NO CURRENCY)
+BALANCES (NO CURRENCY) - what each person gets back or owes
 Tyler gets 20.00
 Chloe owes 20.00
 
@@ -153,7 +153,7 @@ python3 balanzo.py example-expenses.txt
 ```
 Weekend trip expenses
 
-Who pays whom to settle up: PAYMENTS
+PAYMENTS - who pays whom to settle up
 Olivia pays Jake 931.79
 Ben pays Jake 842.33
 Anna pays Lena 696.67
@@ -164,7 +164,7 @@ Mateo pays Lena 14.58
 Marco pays Emma 246.54
 Marco pays Lena 1.25
 
-What each person gets back or owes: BALANCES
+BALANCES - what each person gets back or owes
 Jake gets 1,816.58
 Hannah gets 730.67
 Lena gets 712.50
