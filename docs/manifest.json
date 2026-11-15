@@ -1,6 +1,6 @@
 {
-  "name": "simple-spliito",
-  "short_name": "Spliito",
+  "name": "balanzo",
+  "short_name": "Balanzo",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f6f7f9",

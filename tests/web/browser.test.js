@@ -253,7 +253,7 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
     server = await serveDocs();
     base = `http://127.0.0.1:${server.address().port}/`;
     origin = base.slice(0, -1);
-    tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'spliito-web-'));
+    tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'balanzo-web-'));
     chrome = await launchChrome(path.join(tmp, 'profile'));
     browser = new Cdp(chrome.url);
     await browser.send('Browser.grantPermissions', { origin, permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'] });
@@ -272,7 +272,7 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
 
   describe('page loading', () => {
     it('serves every file the page needs', async () => {
-      for (const name of ['', 'index.html', 'spliito.js', 'manifest.json', 'sw.js', 'icon.svg', 'icon-192.png', 'icon-512.png', 'icon-180.png']) {
+      for (const name of ['', 'index.html', 'balanzo.js', 'manifest.json', 'sw.js', 'icon.svg', 'icon-192.png', 'icon-512.png', 'icon-180.png']) {
         const response = await fetch(base + name);
         assert.equal(response.status, 200, name);
       }
@@ -300,7 +300,7 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
 
     it('loads with the right title and no script errors', async () => {
       const { page } = await openApp(1280, 800);
-      assert.equal(await page.eval('document.title'), 'simple-spliito');
+      assert.equal(await page.eval('document.title'), 'balanzo');
       assert.deepEqual(page.errors, []);
     });
 
@@ -739,7 +739,7 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
           if (related.length) lines.push(people[Math.floor(rand() * 18)] + ' ' + (Math.floor(rand() * 40000) / 4) + ' ' + related.join(' '));
         }
         const started = performance.now();
-        Spliito.run(lines.join('\\n'));
+        Balanzo.run(lines.join('\\n'));
         return performance.now() - started;
       })()`);
       assert.ok(elapsed < 3000, `took ${elapsed.toFixed(0)}ms`);

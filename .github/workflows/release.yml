@@ -1,11 +1,11 @@
-# Creates the GitHub release for the newest version in CHANGELOG.md, with simple-spliito.py attached.
+# Creates the GitHub release for the newest version in CHANGELOG.md, with balanzo.py attached.
 # When that version already has a release, nothing happens, so pushes that don't add a version are safe.
 name: Release
 
 on:
   push:
     branches: [main]
-    paths: [CHANGELOG.md, simple-spliito.py, scripts/release.py]
+    paths: [CHANGELOG.md, balanzo.py, scripts/release.py]
   workflow_dispatch:
 
 permissions:
@@ -31,7 +31,7 @@ jobs:
             exit 0
           fi
           python3 scripts/release.py notes "$version" > release-notes.md
-          gh release create "$tag" simple-spliito.py \
+          gh release create "$tag" balanzo.py \
             --title "$tag" \
             --notes-file release-notes.md \
             --target "$GITHUB_SHA" \

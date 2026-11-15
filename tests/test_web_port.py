@@ -1,4 +1,4 @@
-"""Checks that docs/spliito.js prints exactly what simple-spliito.py prints.
+"""Checks that docs/balanzo.js prints exactly what balanzo.py prints.
 
 Needs Node.js, and is skipped without it. Run with: python3 -m unittest discover -s tests
 """
@@ -12,8 +12,8 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPT = ROOT / "simple-spliito.py"
-WEB_JS = ROOT / "docs" / "spliito.js"
+SCRIPT = ROOT / "balanzo.py"
+WEB_JS = ROOT / "docs" / "balanzo.js"
 NODE_RUNNER = """
 const fs = require('fs');
 const { run } = require(process.argv[1]);

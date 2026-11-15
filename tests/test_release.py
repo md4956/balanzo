@@ -55,7 +55,7 @@ class ReleaseTests(unittest.TestCase):
         workflow = (ROOT / ".github" / "workflows" / "release.yml").read_text(encoding="utf-8")
         self.assertIn("scripts/release.py latest", workflow)
         self.assertIn("scripts/release.py notes", workflow)
-        self.assertIn("simple-spliito.py", workflow)
+        self.assertIn("balanzo.py", workflow)
 
 
 if __name__ == "__main__":

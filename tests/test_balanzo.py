@@ -1,4 +1,4 @@
-"""Tests for simple-spliito.py. Run with: python3 -m unittest discover -s tests"""
+"""Tests for balanzo.py. Run with: python3 -m unittest discover -s tests"""
 
 import contextlib
 import importlib.util
@@ -14,13 +14,13 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPT = ROOT / "simple-spliito.py"
+SCRIPT = ROOT / "balanzo.py"
 EXAMPLE = ROOT / "example-expenses.txt"
 EXAMPLE_MD = ROOT / "example-expenses.md"
 
-spec = importlib.util.spec_from_file_location("simple_spliito", SCRIPT)
-spliito = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(spliito)
+spec = importlib.util.spec_from_file_location("balanzo", SCRIPT)
+balanzo = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(balanzo)
 
 
 def run_script(content, suffix=".txt"):
@@ -89,7 +89,7 @@ class SettlementAccuracyTests(unittest.TestCase):
         for case in range(300):
             values = random_zero_sum(rng, rng.randint(2, 7))
             balances = {f"p{i}": float(v) for i, v in enumerate(values)}
-            payments = spliito.settle(balances, [])
+            payments = balanzo.settle(balances, [])
             with self.subTest(case=case, values=values):
                 self.assertEqual(len(payments), min_payments(values))
                 net = net_after(balances, payments)
@@ -102,30 +102,30 @@ class SettlementAccuracyTests(unittest.TestCase):
             values = [round(rng.uniform(-500, 500), 2) for _ in range(people - 1)]
             values.append(round(-sum(values), 2))
             balances = {f"p{i}": v for i, v in enumerate(values)}
-            payments = spliito.settle(balances, [])
+            payments = balanzo.settle(balances, [])
             net = net_after(balances, payments)
             with self.subTest(case=case):
                 self.assertTrue(all(abs(v) < 0.001 for v in net.values()), net)
 
     def test_two_payments_instead_of_greedy_three(self):
-        payments = spliito.settle({"a": 10.0, "b": 5.0, "c": -10.0, "d": -5.0}, [])
+        payments = balanzo.settle({"a": 10.0, "b": 5.0, "c": -10.0, "d": -5.0}, [])
         self.assertEqual(sorted(payments), [("c", "a", 10.0), ("d", "b", 5.0)])
 
     def test_three_payments_for_four_people(self):
         balances = {"ali": 200000.0, "sara": 150000.0, "mina": -50000.0, "reza": -300000.0}
-        payments = spliito.settle(balances, [])
+        payments = balanzo.settle(balances, [])
         self.assertEqual(len(payments), 3)
         self.assertTrue(all(abs(v) < 0.001 for v in net_after(balances, payments).values()))
 
     def test_nobody_owes_means_no_payments(self):
-        self.assertEqual(spliito.settle({"a": 0.0, "b": 0.0}, []), [])
-        self.assertEqual(spliito.settle({}, []), [])
+        self.assertEqual(balanzo.settle({"a": 0.0, "b": 0.0}, []), [])
+        self.assertEqual(balanzo.settle({}, []), [])
 
     def test_groups_cover_every_person_once_and_each_sums_to_zero(self):
         rng = random.Random(3)
         for case in range(100):
             values = random_zero_sum(rng, rng.randint(2, 8))
-            groups = spliito.split_into_groups(values)
+            groups = balanzo.split_into_groups(values)
             indexes = sorted(i for group in groups for i in group)
             with self.subTest(case=case):
                 self.assertEqual(indexes, list(range(len(values))))
@@ -135,7 +135,7 @@ class SettlementAccuracyTests(unittest.TestCase):
     def test_more_than_eighteen_people_prints_note_and_still_clears(self):
         balances = {f"p{i}": 1.0 if i % 2 == 0 else -1.0 for i in range(20)}
         warnings = []
-        payments = spliito.settle(balances, warnings)
+        payments = balanzo.settle(balances, warnings)
         self.assertIn("Note: more than 18 people", warnings[0])
         self.assertTrue(all(abs(v) < 1e-6 for v in net_after(balances, payments).values()))
 
@@ -219,7 +219,7 @@ class BalanceCalculationTests(unittest.TestCase):
         self.assertIn("2 people, 1 payment, total 0.00", stdout)
 
     def test_total_line_warns_when_balances_do_not_add_up(self):
-        blocks = spliito.report_blocks({"a": 1.0}, [], "", "")
+        blocks = balanzo.report_blocks({"a": 1.0}, [], "", "")
         self.assertIn("total 1.00 (should be 0.00, calculation bug)", blocks[2][0])
 
 
