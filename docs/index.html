@@ -43,6 +43,7 @@
     border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer;
   }
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: 0.5; cursor: default; }
   input[type="file"] { display: none; }
   .workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .output .row { margin-top: 10px; }
@@ -79,7 +80,7 @@
       <pre id="report" class="placeholder" aria-live="polite">The report appears here.</pre>
       <div class="row">
         <button id="copy">Copy report</button>
-        <button id="download">Download</button>
+        <button id="download" disabled>Download</button>
       </div>
     </section>
   </div>
@@ -93,12 +94,14 @@
   const status = document.getElementById('status');
   let calculatedText = null;  // the input the report was made from
   let fileExt = '.txt';       // extension of the last loaded file, so Download keeps it
+  const download = document.getElementById('download');
 
   function calculate() {
     report.textContent = Spliito.run(input.value).text;
     report.classList.remove('placeholder');
     calculatedText = input.value;
     updateStale();
+    updateDownload();
     // Restart the highlight, so it shows on every calculation even when the report looks the same
     report.classList.remove('updated');
     void report.offsetWidth;
@@ -113,7 +116,15 @@
     status.textContent = stale ? 'Text changed. Press Calculate to update the report.' : 'Report updated.';
   }
 
-  input.addEventListener('input', updateStale);
+  // Download needs a calculation first, and some text to save; otherwise it would save an empty file
+  function updateDownload() {
+    download.disabled = calculatedText === null || !input.value.trim();
+  }
+
+  input.addEventListener('input', () => {
+    updateStale();
+    updateDownload();
+  });
 
   // Title slug and local date-time, e.g. dinner-2026-11-14-2130.txt
   function downloadName() {
@@ -197,7 +208,7 @@
     setTimeout(() => { button.textContent = 'Copy report'; }, 1500);
   });
 
-  document.getElementById('download').addEventListener('click', () => {
+  download.addEventListener('click', () => {
     const url = URL.createObjectURL(new Blob([input.value], { type: 'text/plain' }));
     const link = document.createElement('a');
     link.href = url;

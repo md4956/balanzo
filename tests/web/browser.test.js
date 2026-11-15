@@ -605,9 +605,27 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
       assert.equal(await page.eval("document.getElementById('copy').textContent"), 'Copy report');
     });
 
+    it('keeps Download disabled until Calculate is clicked', async () => {
+      const { page } = await openApp(1280, 800);
+      assert.equal(await page.eval("document.getElementById('download').disabled"), true);
+      await page.setInput(DINNER);
+      assert.equal(await page.eval("document.getElementById('download').disabled"), true);
+      await page.click('#calculate');
+      assert.equal(await page.eval("document.getElementById('download').disabled"), false);
+    });
+
+    it('disables Download again when the text is cleared after Calculate', async () => {
+      const { page } = await openApp(1280, 800);
+      await page.setInput(DINNER);
+      await page.click('#calculate');
+      await page.setInput('');
+      assert.equal(await page.eval("document.getElementById('download').disabled"), true);
+    });
+
     it('downloads the input text as a .txt file', async () => {
       const { page, downloads } = await openApp(1280, 800);
       await page.setInput(DINNER);
+      await page.click('#calculate');
       await page.click('#download');
       const [name] = await waitForDownload(downloads);
       assert.match(name, /^Dinner-\d{4}-\d{2}-\d{2}-\d{4}\.txt$/);
@@ -617,6 +635,7 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
     it('downloads an untitled file under the expenses name', async () => {
       const { page, downloads } = await openApp(1280, 800);
       await page.setInput('ana 1 ana ben');
+      await page.click('#calculate');
       await page.click('#download');
       const [name] = await waitForDownload(downloads);
       assert.match(name, /^expenses-\d{4}-\d{2}-\d{2}-\d{4}\.txt$/);
@@ -677,6 +696,7 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
     it('names downloads from different minutes differently and saves both', async () => {
       const { page, downloads } = await openApp(1280, 800);
       await page.setInput(DINNER);
+      await page.click('#calculate');
       await page.eval('window.__RealDate = Date; window.__now = new Date(2026, 10, 14, 21, 30).getTime();' +
         'window.Date = class extends __RealDate { constructor(...args) { super(...(args.length ? args : [window.__now])); } };');
       await page.click('#download');
@@ -689,6 +709,7 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
     it('drops characters that are not allowed in file names from the title', async () => {
       const { page, downloads } = await openApp(1280, 800);
       await page.setInput('# Trip / Sat: 1*?\nana 1 ana\n');
+      await page.click('#calculate');
       await page.click('#download');
       const [name] = await waitForDownload(downloads);
       assert.match(name, /^Trip-Sat-1-\d{4}-\d{2}-\d{2}-\d{4}\.txt$/);
