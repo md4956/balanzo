@@ -354,6 +354,32 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
       assert.equal(await page.eval("parseFloat(getComputedStyle(document.getElementById('input')).fontSize)"), 16);
     });
 
+    it('gives the input and report boxes the same height and font on desktop and phone', async () => {
+      for (const [width, mobile] of [[1280, false], [390, true]]) {
+        const { page } = await openApp(width, 800, mobile);
+        const [input, report] = await page.eval("[...document.querySelectorAll('#input, #report')].map((el) => ({ height: el.getBoundingClientRect().height, font: getComputedStyle(el).fontSize }))");
+        assert.equal(report.height, input.height, `boxes should be the same height at ${width}px`);
+        assert.equal(report.font, input.font, `boxes should use the same font size at ${width}px`);
+      }
+    });
+
+    it('starts the boxes at the same height and lines up their button rows on desktop', async () => {
+      const { page } = await openApp(1280, 800);
+      const [input, report] = await page.eval("['#input', '#report'].map((sel) => document.querySelector(sel).getBoundingClientRect().top)");
+      assert.equal(report, input, 'boxes should start at the same height');
+      const [inputRow, outputRow] = await page.eval("['.input .row', '.output .row'].map((sel) => document.querySelector(sel).getBoundingClientRect().top)");
+      assert.equal(outputRow, inputRow, 'button rows should line up side by side');
+    });
+
+    it('keeps the report box the same height and scrolls it when the report is longer', async () => {
+      const { page } = await openApp(1280, 800);
+      const before = (await page.rect('#report')).height;
+      await page.setInput(Array.from({ length: 80 }, (_, i) => `p${i} 10 p${i} p${i + 1}`).join('\n'));
+      await page.click('#calculate');
+      assert.equal((await page.rect('#report')).height, before, 'the box should not grow with the report');
+      assert.ok(await page.eval("document.getElementById('report').scrollHeight > document.getElementById('report').clientHeight"), 'the report should scroll inside its box');
+    });
+
     it('shows the placeholder text before anything is calculated', async () => {
       const { page } = await openApp(1280, 800);
       assert.equal(await page.eval("document.getElementById('report').textContent"), 'The report appears here.');
