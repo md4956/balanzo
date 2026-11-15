@@ -300,7 +300,7 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
 
     it('loads with the right title and no script errors', async () => {
       const { page } = await openApp(1280, 800);
-      assert.equal(await page.eval('document.title'), 'balanzo');
+      assert.equal(await page.eval('document.title'), 'Balanzo');
       assert.deepEqual(page.errors, []);
     });
 
