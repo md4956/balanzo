@@ -190,7 +190,7 @@ How to read the output:
 
 The output is plain text with short lines and no decoration, so it reads the same when pasted into a messenger or viewed on a narrow phone screen. The web page, the file and the command line all print this same format.
 
-The format is versioned. This README describes version 4.0.0 (see the [changelog](CHANGELOG.md)).
+The format is versioned. This README describes version 4.1.0 (see the [changelog](CHANGELOG.md)).
 
 ## Versions and releases
 

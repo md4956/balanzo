@@ -2,10 +2,10 @@
 
 All notable changes to this project are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and version numbers follow [Semantic Versioning](https://semver.org/). Versions before 1.0.0 may change behavior in a minor release.
 
-## [Unreleased]
+## [4.1.0] - 2026-11-16
 
 ### Changed
-- Each section heading is now followed by a short description after a dash, such as `PAYMENTS - who pays whom`. The EXPENSES heading in the web Download does too.
+- Each section heading is now followed by a short description after a dash, such as `PAYMENTS - who pays whom`. The EXPENSES heading in the web Download does too. Anything that reads the output by its heading lines needs to match the new headings. The descriptions are short so each heading fits on one line on a phone.
 
 ## [4.0.0] - 2026-11-16
 
