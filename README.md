@@ -181,6 +181,7 @@ Olivia owes 931.79
 
 How to read the output:
 
+- Each heading is a name, then a dash and a short description of what the section holds, such as `PAYMENTS - who pays whom to settle up`.
 - **PAYMENTS** comes first, one payment per line. Read this section first: it's enough to settle the trip. People who pay only once are listed first, sorted by amount. Then each person who pays several times, also sorted by amount, so their payments are next to each other.
 - If nothing is owed, the payments section says `Everyone is settled.`
 - **BALANCES** lists everyone, largest first. `gets` means the person should receive money, and `owes` means they should pay. A person with nothing to settle shows `is settled`.
