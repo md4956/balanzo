@@ -2,6 +2,14 @@
 
 All notable changes to this project are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and version numbers follow [Semantic Versioning](https://semver.org/). Versions before 1.0.0 may change behavior in a minor release.
 
+## [3.1.0] - 2026-11-15
+
+### Changed
+- On the web page, Download saves the report first, then an `EXPENSES` heading and the expenses it was made from, instead of the expenses alone. The report is made from the text in the box when Download is clicked.
+
+### Fixed
+- On the web page, Download is disabled until Calculate has been clicked, and while the box is empty. Before, it saved an empty file in those cases.
+
 ## [3.0.1] - 2026-11-15
 
 ### Fixed

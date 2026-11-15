@@ -16,7 +16,7 @@ The same tool runs as a web page: **https://md4956.github.io/simple-spliito/** (
 2. Tap **Calculate**. Ctrl+Enter or ⌘+Enter works too.
 3. Read the report, or tap **Copy report** to paste it into a messenger.
 
-**Download** saves the expenses as a `.txt` or `.md` file, matching the file you loaded. The page works offline after the first visit. To keep it on the home screen, use "Add to Home Screen" in Safari or Chrome.
+**Download** saves a `.txt` or `.md` file, matching the file you loaded. It starts with the report, then an `EXPENSES` heading and the expenses it was made from. Download is off until you tap Calculate, and while the box is empty. The page works offline after the first visit. To keep it on the home screen, use "Add to Home Screen" in Safari or Chrome.
 
 The page shows the same report as the script. How to write the expenses is explained in [Quick start](#quick-start) and [Input format](#input-format).
 
@@ -189,7 +189,7 @@ How to read the output:
 
 The output is plain text with short lines and no decoration, so it reads the same when pasted into a messenger or viewed on a narrow phone screen. The web page, the file and the command line all print this same format.
 
-The format is versioned. This README describes version 3.0.1 (see the [changelog](CHANGELOG.md)).
+The format is versioned. This README describes version 3.1.0 (see the [changelog](CHANGELOG.md)).
 
 ## Versions and releases
 

@@ -622,14 +622,24 @@ describe('docs/ in Chrome', { skip: CHROME ? false : 'Chrome not found; set CHRO
       assert.equal(await page.eval("document.getElementById('download').disabled"), true);
     });
 
-    it('downloads the input text as a .txt file', async () => {
+    it('downloads the report, then the expenses, as a .txt file', async () => {
       const { page, downloads } = await openApp(1280, 800);
       await page.setInput(DINNER);
       await page.click('#calculate');
       await page.click('#download');
       const [name] = await waitForDownload(downloads);
       assert.match(name, /^Dinner-\d{4}-\d{2}-\d{2}-\d{4}\.txt$/);
-      assert.equal(fs.readFileSync(path.join(downloads, name), 'utf8'), DINNER);
+      assert.equal(fs.readFileSync(path.join(downloads, name), 'utf8'), DINNER_REPORT + '\nEXPENSES\n' + DINNER);
+    });
+
+    it('downloads the report of the text in the box, even when it changed after Calculate', async () => {
+      const { page, downloads } = await openApp(1280, 800);
+      await page.setInput(DINNER);
+      await page.click('#calculate');
+      await page.setInput(DINNER + 'cy 10 cy ana\n');
+      await page.click('#download');
+      const [name] = await waitForDownload(downloads);
+      assert.match(fs.readFileSync(path.join(downloads, name), 'utf8'), /\nEXPENSES\n# Dinner\nana 60 ana ben cy\nben 30 ben cy\ncy 10 cy ana\n$/);
     });
 
     it('downloads an untitled file under the expenses name', async () => {

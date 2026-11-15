@@ -208,8 +208,10 @@
     setTimeout(() => { button.textContent = 'Copy report'; }, 1500);
   });
 
+  // The report first, then the expenses it was made from, so the file explains itself
   download.addEventListener('click', () => {
-    const url = URL.createObjectURL(new Blob([input.value], { type: 'text/plain' }));
+    const text = `${Spliito.run(input.value).text}\nEXPENSES\n${input.value}`;
+    const url = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
     const link = document.createElement('a');
     link.href = url;
     link.download = downloadName();
