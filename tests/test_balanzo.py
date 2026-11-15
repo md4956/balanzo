@@ -311,11 +311,11 @@ class TitleTests(unittest.TestCase):
 
     def test_comment_on_another_line_is_not_a_title(self):
         stdout, _ = run_script("nik 10 nik eva\n# not a title\n")
-        self.assertTrue(stdout.startswith("PAYMENTS"))
+        self.assertTrue(stdout.startswith("Who pays whom to settle up: PAYMENTS\n"))
 
     def test_empty_first_comment_gives_no_title(self):
         stdout, _ = run_script("#\nnik 10 nik eva\n")
-        self.assertTrue(stdout.startswith("PAYMENTS"))
+        self.assertTrue(stdout.startswith("Who pays whom to settle up: PAYMENTS\n"))
 
     def test_byte_order_mark_does_not_hide_the_title(self):
         stdout, _ = run_script(b"\xef\xbb\xbf# Byte order\nnik 10 nik eva\n")
@@ -429,9 +429,9 @@ class GoldenOutputTests(unittest.TestCase):
             return found[0]
 
         examples = [
-            (block("# Dinner\n"), block("Dinner\n\nPAYMENTS\n")),
-            (block("# Trip, two currencies\n"), block("Trip, two currencies\n\nPAYMENTS (EUR)\n")),
-            (EXAMPLE.read_text(encoding="utf-8"), block("Weekend trip expenses\n\nPAYMENTS\n")),
+            (block("# Dinner\n"), block("Dinner\n\nWho pays whom to settle up: PAYMENTS\n")),
+            (block("# Trip, two currencies\n"), block("Trip, two currencies\n\nWho pays whom to settle up: PAYMENTS (EUR)\n")),
+            (EXAMPLE.read_text(encoding="utf-8"), block("Weekend trip expenses\n\nWho pays whom to settle up: PAYMENTS\n")),
         ]
         for expenses, output in examples:
             with self.subTest(output=output.splitlines()[0]):
@@ -442,11 +442,11 @@ class GoldenOutputTests(unittest.TestCase):
         stdout, _ = run_script("# Dinner\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\n")
         expected = """Dinner
 
-PAYMENTS
+Who pays whom to settle up: PAYMENTS
 Chloe pays Anna 35.00
 Ben pays Anna 5.00
 
-BALANCES
+What each person gets back or owes: BALANCES
 Anna gets 40.00
 Ben owes 5.00
 Chloe owes 35.00
@@ -457,7 +457,7 @@ Chloe owes 35.00
 
     def test_example_expenses_file(self):
         stdout, _ = run_script(EXAMPLE.read_text(encoding="utf-8"))
-        self.assertIn("Weekend trip expenses\n\nPAYMENTS\nOlivia pays Jake 931.79\n", stdout)
+        self.assertIn("Weekend trip expenses\n\nWho pays whom to settle up: PAYMENTS\nOlivia pays Jake 931.79\n", stdout)
         self.assertIn("10 people, 9 payments, total 0.00", stdout)
         self.assertIn("Marco pays Lena 1.25", stdout)
         self.assertIn("Olivia owes 931.79", stdout)

@@ -2,6 +2,11 @@
 
 All notable changes to this project are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and version numbers follow [Semantic Versioning](https://semver.org/). Versions before 1.0.0 may change behavior in a minor release.
 
+## [Unreleased]
+
+### Changed
+- Each section heading now starts with a short description, such as `Who pays whom to settle up: PAYMENTS`. The EXPENSES heading in the web Download does too.
+
 ## [4.0.0] - 2026-11-16
 
 ### Changed
