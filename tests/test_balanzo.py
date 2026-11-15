@@ -148,7 +148,7 @@ class BalanceCalculationTests(unittest.TestCase):
         self.assertIn("reza owes 300,000.00 IRT", stdout)
 
     def test_markdown_file_gives_the_same_report_as_txt(self):
-        text = "# Dinner\nana 60 ana ben cy\nben 30 ben cy\n"
+        text = "# Dinner\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\n"
         txt_stdout, _ = run_script(text)
         md_stdout, md_code = run_script(text, suffix=".md")
         self.assertEqual(md_code, 0)
@@ -439,17 +439,17 @@ class GoldenOutputTests(unittest.TestCase):
                 self.assertEqual(stdout, output)
 
     def test_quick_start(self):
-        stdout, _ = run_script("# Dinner\nana 60 ana ben cy\nben 30 ben cy\n")
+        stdout, _ = run_script("# Dinner\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\n")
         expected = """Dinner
 
 PAYMENTS
-cy pays ana 35.00
-ben pays ana 5.00
+Chloe pays Anna 35.00
+Ben pays Anna 5.00
 
 BALANCES
-ana gets 40.00
-ben owes 5.00
-cy owes 35.00
+Anna gets 40.00
+Ben owes 5.00
+Chloe owes 35.00
 
 3 people, 2 payments, total 0.00
 """
@@ -457,10 +457,10 @@ cy owes 35.00
 
     def test_example_expenses_file(self):
         stdout, _ = run_script(EXAMPLE.read_text(encoding="utf-8"))
-        self.assertIn("Weekend trip expenses\n\nPAYMENTS\nivy pays sam 931.79\n", stdout)
+        self.assertIn("Weekend trip expenses\n\nPAYMENTS\nOlivia pays Jake 931.79\n", stdout)
         self.assertIn("10 people, 9 payments, total 0.00", stdout)
-        self.assertIn("tom pays lia 1.25", stdout)
-        self.assertIn("ivy owes 931.79", stdout)
+        self.assertIn("Marco pays Lena 1.25", stdout)
+        self.assertIn("Olivia owes 931.79", stdout)
 
 
 if __name__ == "__main__":

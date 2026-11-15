@@ -56,7 +56,7 @@ class WebPortMatchesScriptTest(unittest.TestCase):
         self.assertEqual(web_code == 0, script_code == 0)
 
     def test_readme_example(self):
-        self.assertSameOutput("# Dinner\nana 60 ana ben cy\nben 30 ben cy\n")
+        self.assertSameOutput("# Dinner\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\n")
 
     def test_two_currencies(self):
         self.assertSameOutput("# Trip, two currencies\n@EUR\nnik 50 nik eva\nana 30 ana eva\n@\nbob 40 bob cy\n")

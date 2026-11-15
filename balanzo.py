@@ -7,8 +7,8 @@ payer amount who shares it
 
 Example:
 # Dinner
-ana 60 ana ben cy
-ben 30 ben cy
+Anna 60 Anna Ben Chloe
+Ben 30 Ben Chloe
 
 The first line can be a # title. The amount is split between the people listed."""
 

@@ -1,17 +1,17 @@
 # Weekend trip expenses
 # Format: payer amount people (space or comma separated)
-lia 1250 lia nik sam ben
+Lena 1250 Lena Lukas Jake Ben
 # Mixed spaces and commas, decimal amount
-nik 640.5 nik eva tom,ivy
-sam 2100 sam ivy ben,max # dinner, split with ivy and ben
-eva 980 eva joe tom
-# Payer not in the list: tom paid the whole amount for max
-tom 415 max
-ben 362.75 ben nik,sam
+Lukas 640.5 Lukas Emma Marco,Olivia
+Jake 2100 Jake Olivia Ben,Mateo # dinner, split with Olivia and Ben
+Emma 980 Emma Hannah Marco
+# Payer not in the list: Marco paid the whole amount for Mateo
+Marco 415 Mateo
+Ben 362.75 Ben Lukas,Jake
 
-joe 1480 joe ben eva ivy max ana
-max 528 max tom joe
+Hannah 1480 Hannah Ben Emma Olivia Mateo Anna
+Mateo 528 Mateo Marco Hannah
 # Paid only for themselves: no effect on balances
-ivy 297 ivy
+Olivia 297 Olivia
 # A name listed twice gets two shares
-sam 900 sam ana ana lia
+Jake 900 Jake Anna Anna Lena

@@ -28,8 +28,8 @@ Save this as `dinner.txt` (or `dinner.md`, which works the same way):
 
 ```
 # Dinner
-ana 60 ana ben cy
-ben 30 ben cy
+Anna 60 Anna Ben Chloe
+Ben 30 Ben Chloe
 ```
 
 Run it:
@@ -56,20 +56,20 @@ You get:
 Dinner
 
 PAYMENTS
-cy pays ana 35.00
-ben pays ana 5.00
+Chloe pays Anna 35.00
+Ben pays Anna 5.00
 
 BALANCES
-ana gets 40.00
-ben owes 5.00
-cy owes 35.00
+Anna gets 40.00
+Ben owes 5.00
+Chloe owes 35.00
 
 3 people, 2 payments, total 0.00
 ```
 
 - The first line of the file becomes the title.
-- **PAYMENTS** is the answer. `cy pays ana 35.00` means cy should pay ana 35.00. The two payments settle everyone.
-- **BALANCES** shows what each person gets or owes. `ana gets 40.00` means ana should receive 40.00.
+- **PAYMENTS** is the answer. `Chloe pays Anna 35.00` means Chloe should pay Anna 35.00. The two payments settle everyone.
+- **BALANCES** shows what each person gets or owes. `Anna gets 40.00` means Anna should receive 40.00.
 
 That's all you need for most trips. The rest of this page covers the other features.
 
@@ -81,18 +81,18 @@ One expense per line:
 <payer> <amount> <person> <person> ...
 ```
 
-The amount is split equally between the people listed after it. The payer only gets a share if they list themselves. So `ana 60 ana ben cy` splits 60 three ways and includes ana, while `tom 415 max` means tom paid the whole amount for max.
+The amount is split equally between the people listed after it. The payer only gets a share if they list themselves. So `Anna 60 Anna Ben Chloe` splits 60 three ways and includes Anna, while `Marco 415 Mateo` means Marco paid the whole amount for Mateo.
 
 Other rules:
 
-- **File type:** only `.txt` and `.md` files are accepted, and any other file (including one without an extension) stops with `Unsupported file type`. `.txt` and `.md` files are read the same way. In a `.md` file, don't use Markdown syntax for expenses: a list bullet (`- ana 60 ana ben`) or a code fence (```` ``` ````) is read as plain text, so the line is skipped and listed under WARNINGS.
-- **Names** can be separated by spaces, commas or both: `nik 640.5 nik eva tom,ivy` and `nik 640.5 nik, eva, tom, ivy` mean the same thing.
-- **Repeated names** get more shares. `sam 900 sam ana ana lia` splits 900 into four parts, and ana owes two of them. Numbers are allowed in names, so `mia1 mia2 mia3` are three people.
+- **File type:** only `.txt` and `.md` files are accepted, and any other file (including one without an extension) stops with `Unsupported file type`. `.txt` and `.md` files are read the same way. In a `.md` file, don't use Markdown syntax for expenses: a list bullet (`- Anna 60 Anna Ben`) or a code fence (```` ``` ````) is read as plain text, so the line is skipped and listed under WARNINGS.
+- **Names** can be separated by spaces, commas or both: `Lukas 640.5 Lukas Emma Marco,Olivia` and `Lukas 640.5 Lukas, Emma, Marco, Olivia` mean the same thing.
+- **Repeated names** get more shares. `Jake 900 Jake Anna Anna Lena` splits 900 into four parts, and Anna owes two of them. Numbers are allowed in names, so `Mia1 Mia2 Mia3` are three people.
 - **Decimals** work: `362.75`. Amounts that aren't finite numbers (`nan`, `inf`, `1e999`) are rejected.
-- **Comments:** `#` starts a comment, and everything after it on that line is ignored. A comment can take a whole line or follow an expense: `dan 210 mia1 mia2 mia3 # mias are cousins`.
+- **Comments:** `#` starts a comment, and everything after it on that line is ignored. A comment can take a whole line or follow an expense: `Daniel 210 Mia1 Mia2 Mia3 # the Mias are cousins`.
 - **Blank lines** are ignored.
 - **Names can't contain `#`, `*` or `~`.** A `*` or `~` stops with an error, and no report is printed. A `_` is allowed, but it gets a warning, because messengers can turn the text between two underscores into italics.
-- **A `#` directly after a name**, like `mia#2`, still starts a comment. It gets a warning, and the name is read as `mia`.
+- **A `#` directly after a name**, like `Mia#2`, still starts a comment. It gets a warning, and the name is read as `Mia`.
 - **The title** comes from a comment on the first line of the file. `# Weekend trip` at the top makes `Weekend trip` the title. If the first line isn't a comment, there's no title.
 - **Currencies** are covered below.
 - **Other lines** that don't match the format are skipped and listed under WARNINGS. Watch out for plain-text notes whose second word is a number, such as `Notes: 100 euros total`, because those are read as an expense.
@@ -110,32 +110,32 @@ If a file uses more than one currency, the report has a section for each one. Ea
 ```
 # Trip, two currencies
 @EUR
-nik 50 nik eva
-ana 30 ana eva
+Lukas 50 Lukas Emma
+Anna 30 Anna Emma
 @
-bob 40 bob cy
+Tyler 40 Tyler Chloe
 ```
 
 ```
 Trip, two currencies
 
 PAYMENTS (EUR)
-eva pays nik 25.00 EUR
-eva pays ana 15.00 EUR
+Emma pays Lukas 25.00 EUR
+Emma pays Anna 15.00 EUR
 
 BALANCES (EUR)
-nik gets 25.00 EUR
-ana gets 15.00 EUR
-eva owes 40.00 EUR
+Lukas gets 25.00 EUR
+Anna gets 15.00 EUR
+Emma owes 40.00 EUR
 
 3 people, 2 payments, total 0.00 EUR
 
 PAYMENTS (NO CURRENCY)
-cy pays bob 20.00
+Chloe pays Tyler 20.00
 
 BALANCES (NO CURRENCY)
-bob gets 20.00
-cy owes 20.00
+Tyler gets 20.00
+Chloe owes 20.00
 
 2 people, 1 payment, total 0.00
 ```
@@ -154,27 +154,27 @@ python3 balanzo.py example-expenses.txt
 Weekend trip expenses
 
 PAYMENTS
-ivy pays sam 931.79
-ben pays sam 842.33
-ana pays lia 696.67
-max pays joe 730.67
-max pays nik 46.96
-max pays sam 42.46
-max pays lia 14.58
-tom pays eva 246.54
-tom pays lia 1.25
+Olivia pays Jake 931.79
+Ben pays Jake 842.33
+Anna pays Lena 696.67
+Mateo pays Hannah 730.67
+Mateo pays Lukas 46.96
+Mateo pays Jake 42.46
+Mateo pays Lena 14.58
+Marco pays Emma 246.54
+Marco pays Lena 1.25
 
 BALANCES
-sam gets 1,816.58
-joe gets 730.67
-lia gets 712.50
-eva gets 246.54
-nik gets 46.96
-tom owes 247.79
-ana owes 696.67
-max owes 834.67
-ben owes 842.33
-ivy owes 931.79
+Jake gets 1,816.58
+Hannah gets 730.67
+Lena gets 712.50
+Emma gets 246.54
+Lukas gets 46.96
+Marco owes 247.79
+Anna owes 696.67
+Mateo owes 834.67
+Ben owes 842.33
+Olivia owes 931.79
 
 10 people, 9 payments, total 0.00
 ```
