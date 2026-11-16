@@ -256,6 +256,9 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
       tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'balanzo-web-'));
       chrome = await launchChrome(executable, path.join(tmp, 'profile'));
       browser = new Cdp(chrome.url);
+      // Old Edge (113) ignored --headless=new and showed a window plus a native file picker; stop before any test runs
+      const { userAgent } = await browser.send('Browser.getVersion');
+      if (!userAgent.includes('Headless')) throw new Error(`${name} opened a visible window instead of running headless; update it`);
       await browser.send('Browser.grantPermissions', { origin, permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'] });
     });
 
