@@ -98,6 +98,28 @@ for (const config of DRIVERS) {
       assert.equal(await driver.execute("return document.getElementById('input').value"), DINNER);
     });
 
+    it('copies only a report made from the text in the box', async (t) => {
+      await open(t, 1280, 800);
+      // Records what Copy writes instead of using the system clipboard. browser.test.js checks the real clipboard in Chrome.
+      await driver.execute('window.copied = []; navigator.clipboard.writeText = async (text) => { copied.push(text); };');
+      // A WebDriver click on a disabled button can leave Safari ignoring later clicks, even in the next run,
+      // so the disabled button is clicked from the page. The browser ignores it there too.
+      const clickDisabledCopy = "const copy = document.getElementById('copy'); copy.click(); return [copy.disabled, window.copied.length]";
+      assert.deepEqual(await driver.execute(clickDisabledCopy), [true, 0]);
+      await setInput(DINNER);
+      assert.deepEqual(await driver.execute(clickDisabledCopy), [true, 0]);
+      await driver.click('#calculate');
+      await setInput(DINNER + 'Chloe 10 Chloe Anna\n');
+      assert.deepEqual(await driver.execute(clickDisabledCopy), [true, 0]);
+      await driver.click('#calculate');
+      await driver.click('#copy');
+      await driver.waitFor("document.getElementById('copy').textContent === 'Copied'");
+      const copied = await driver.execute('return window.copied');
+      assert.equal(copied.length, 1);
+      assert.equal(copied[0], await driver.execute("return document.getElementById('report').textContent"));
+      assert.match(copied[0], /Chloe paid 10\.00, split between Chloe, Anna/);  // the report from the changed text
+    });
+
     it('does not download an out-of-date report, and asks for Calculate', async (t) => {
       await open(t, 1280, 800);
       await setInput(DINNER);
