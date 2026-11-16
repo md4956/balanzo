@@ -1,5 +1,5 @@
 {
-  "version": "5.0.2",
+  "version": "5.0.3",
   "breaking": false,
-  "summary": "Copy report stays off until the text in the box has been calculated."
+  "summary": "The draft note under the boxes no longer moves the page when it appears."
 }
