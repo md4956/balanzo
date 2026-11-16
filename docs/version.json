@@ -1,5 +1,5 @@
 {
-  "version": "5.0.0",
-  "breaking": true,
-  "summary": "Names ignore upper and lower case, so Ana and ana are one person."
+  "version": "5.0.1",
+  "breaking": false,
+  "summary": "The boxes and buttons keep their size when you open How it works or copy the report."
 }

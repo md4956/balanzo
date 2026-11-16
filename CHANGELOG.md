@@ -2,7 +2,7 @@
 
 All notable changes to this project are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and version numbers follow [Semantic Versioning](https://semver.org/). Versions before 1.0.0 may change behavior in a minor release.
 
-## [Unreleased]
+## [5.0.1] - 2026-11-16
 
 ### Fixed
 - On the web page, on tablets and desktops, opening How it works no longer makes the input and report boxes wider. The page now always fills the window up to 1200px; before, it only grew as wide as its content.
