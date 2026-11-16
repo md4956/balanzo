@@ -1,5 +1,5 @@
 // Offline support: the page tries the network first and falls back to the copy saved here.
-const CACHE = 'balanzo-v2';
+const CACHE = 'balanzo-v3';
 const FILES = ['./', 'index.html', 'balanzo.js', 'manifest.json', 'icon.svg', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', (event) => {
