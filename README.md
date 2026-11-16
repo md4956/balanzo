@@ -211,7 +211,7 @@ The browser tests need Node.js 22+ and run in Chrome and Edge (set `CHROME_PATH`
 
 ### Releasing
 
-This README describes version 5.0.3 (see the [changelog](CHANGELOG.md)).
+This README describes version 5.0.4 (see the [changelog](CHANGELOG.md)).
 
 Merging a new version to `main` creates its [GitHub release](https://github.com/mdortaj/balanzo/releases) automatically. In the same pull request:
 

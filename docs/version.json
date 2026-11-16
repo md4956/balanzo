@@ -1,5 +1,5 @@
 {
-  "version": "5.0.3",
+  "version": "5.0.4",
   "breaking": false,
-  "summary": "The draft note under the boxes no longer moves the page when it appears."
+  "summary": "The How it works example uses full names."
 }
