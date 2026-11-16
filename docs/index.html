@@ -36,6 +36,13 @@
   button.nudge { animation: flash 1.2s ease-out; }
   @media (prefers-reduced-motion: reduce) { pre.updated, button.nudge { animation: none; } }
   .hint { margin: 8px 0 0; color: var(--muted); font-size: 0.85rem; }
+  .guide { margin: 0 0 12px; }
+  .guide summary { cursor: pointer; padding: 12px 0; color: var(--accent); }  /* 44px tall, easy to tap */
+  .guide ol { margin: 0 0 8px; padding-left: 20px; }
+  .guide code { display: block; white-space: pre; overflow-x: auto; margin: 8px 0; padding: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; font-size: 14px; }
+  .guide p { margin: 8px 0 0; color: var(--muted); font-size: 0.85rem; }
+  footer { margin: 24px 0 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
+  footer a { color: inherit; }
   .status { min-height: 1.2em; margin: 0 0 8px; color: var(--muted); font-size: 0.85rem; }
   .row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
   button, .button {
@@ -74,6 +81,17 @@
 </div>
 <main>
   <h1>Balanzo</h1>
+  <details class="guide">
+    <summary>How it works</summary>
+    <ol>
+      <li>Paste your expenses into the box, or tap <b>Load .txt or .md</b>.</li>
+      <li>Tap <b>Calculate</b>.</li>
+      <li>Read the report, or tap <b>Copy report</b> to paste it into a messenger.</li>
+    </ol>
+    <code>ana 60 ana ben cy
+ben 30 ben cy</code>
+    <p>Each line is one expense: who paid, the amount, then who it was for. The report shows the fewest payments that settle everyone. <a href="https://github.com/md4956/balanzo#readme">Full guide</a></p>
+  </details>
   <p class="status" id="status"></p>
 
   <div class="workspace">
@@ -96,6 +114,7 @@
   </div>
   <p class="hint">Ctrl+Enter or ⌘+Enter calculates. You can also drop a .txt or .md file anywhere on this page.</p>
   <p class="hint" id="draft"></p>
+  <footer>Balanzo is a hobby project. <a href="https://github.com/md4956/balanzo">Source code and developer on GitHub</a></footer>
 </main>
 <div id="drop">Drop the .txt or .md file here</div>
 
@@ -241,7 +260,7 @@
       calc.classList.add('nudge');
       return;
     }
-    const text = `${Balanzo.run(input.value).text}\nEXPENSES\n${input.value}`;
+    const text = `${Balanzo.run(input.value).text}\nEXPENSES - the expenses behind this report\n${input.value}`;
     const url = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
     const link = document.createElement('a');
     link.href = url;

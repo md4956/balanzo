@@ -63,7 +63,7 @@ for (const config of DRIVERS) {
       await driver.click('#calculate');
       await driver.waitFor("document.getElementById('report').textContent.includes('Anna paid 60.00, split between Anna, Ben, Chloe')");
       const report = await driver.execute("return document.getElementById('report').textContent");
-      assert.match(report, /PAYMENTS\nChloe pays Anna 35\.00/);
+      assert.match(report, /PAYMENTS - who pays whom\nChloe pays Anna 35\.00/);
     });
 
     it('fits the whole page in a laptop window without scrolling', async (t) => {

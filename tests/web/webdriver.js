@@ -10,8 +10,11 @@ class WebDriver {
   // Starts the driver on its own port and opens one session with the given capabilities
   static async start({ command, args, port, capabilities }) {
     const proc = spawn(command, args, { stdio: 'ignore' });
+    let spawnError = null;  // a missing command is reported as an 'error' event, which must be handled
+    proc.on('error', (error) => { spawnError = error; });
     const driver = new WebDriver(`http://127.0.0.1:${port}`, proc);
     for (let tries = 0; ; tries++) {
+      if (spawnError) throw new Error(`${command} could not be run: ${spawnError.code}`);
       if (proc.exitCode !== null) throw new Error(`${command} exited with code ${proc.exitCode}`);
       if (await driver.ready()) break;
       if (tries > 100) {

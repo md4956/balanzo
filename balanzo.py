@@ -90,7 +90,7 @@ def report_blocks(balances, transactions, unit, label):
     suffix = f" {unit}" if unit else ""
     heading_suffix = f" ({label})" if label else ""
 
-    payments = [f"PAYMENTS{heading_suffix}"]
+    payments = [f"PAYMENTS{heading_suffix} - who pays whom"]
     if not transactions:
         payments.append("Everyone is settled.")
     else:
@@ -106,7 +106,7 @@ def report_blocks(balances, transactions, unit, label):
             for receiver, amount in sorted(by_payer[payer], key=lambda x: -x[1]):
                 payments.append(f"{payer} pays {receiver} {amount:,.2f}{suffix}")
 
-    balance_lines = [f"BALANCES{heading_suffix}"]
+    balance_lines = [f"BALANCES{heading_suffix} - who gets or owes"]
     for person, balance in sorted(balances.items(), key=lambda x: -x[1]):
         if abs(balance) < 0.005:
             balance_lines.append(f"{person} is settled")

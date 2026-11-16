@@ -19,6 +19,11 @@ All notable changes to this project are listed here. The format follows [Keep a 
 - On the web page, `Load .txt or .md` is a button, so it works from the keyboard.
 - On the web page, an open page shows a notice with a Reload button when a newer version is published (`docs/version.json`). A breaking release says what changed.
 - Browser tests in Safari and Firefox, through WebDriver, when their drivers are running.
+- The Python and browser tests run on every pull request and on pushes to `main` (`.github/workflows/tests.yml`).
+## [4.1.0] - 2026-11-16
+
+### Changed
+- Each section heading is now followed by a short description after a dash, such as `PAYMENTS - who pays whom`. The EXPENSES heading in the web Download does too. Anything that reads the output by its heading lines needs to match the new headings. The descriptions are short so each heading fits on one line on a phone.
 
 ## [4.0.0] - 2026-11-16
 

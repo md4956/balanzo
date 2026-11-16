@@ -30,9 +30,9 @@ const DESKTOP_SIZES = [[1440, 900, false], [1512, 982, false], [1280, 720, false
 const PHONE_SIZES = [[390, 844], [375, 667], [412, 915], [320, 568]];
 const DINNER_REPORT = [
   'Dinner', '',
-  'PAYMENTS',
+  'PAYMENTS - who pays whom',
   'Chloe pays Anna 35.00', 'Ben pays Anna 5.00', '',
-  'BALANCES',
+  'BALANCES - who gets or owes',
   'Anna gets 40.00', 'Ben owes 5.00', 'Chloe owes 35.00', '',
   '3 people, 2 payments, total 0.00', '',
   'HOW I READ IT',
@@ -752,7 +752,7 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
         await page.click('#download');
         const [name] = await waitForDownload(downloads);
         assert.match(name, /^Dinner-\d{4}-\d{2}-\d{2}-\d{4}\.txt$/);
-        assert.equal(fs.readFileSync(path.join(downloads, name), 'utf8'), DINNER_REPORT + '\nEXPENSES\n' + DINNER);
+        assert.equal(fs.readFileSync(path.join(downloads, name), 'utf8'), DINNER_REPORT + '\nEXPENSES - the expenses behind this report\n' + DINNER);
       });
 
       it('asks for Calculate instead of downloading a report that is out of date', async () => {
@@ -775,7 +775,7 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
         await page.click('#calculate');
         await page.click('#download');
         const [name] = await waitForDownload(downloads);
-        assert.match(fs.readFileSync(path.join(downloads, name), 'utf8'), /\nEXPENSES\n# Dinner\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\nChloe 10 Chloe Anna\n$/);
+        assert.match(fs.readFileSync(path.join(downloads, name), 'utf8'), /\nEXPENSES - the expenses behind this report\n# Dinner\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\nChloe 10 Chloe Anna\n$/);
       });
 
       it('does not download a report that stopped with an error', async () => {
