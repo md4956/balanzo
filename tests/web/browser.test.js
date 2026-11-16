@@ -763,21 +763,22 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
         assert.equal(await page.eval("document.getElementById('copy').textContent"), 'Copy report');
       });
 
-      it('keeps Download disabled until Calculate is clicked', async () => {
+      it('keeps Copy report and Download disabled until Calculate is clicked', async () => {
         const { page } = await openApp(1280, 800);
-        assert.equal(await page.eval("document.getElementById('download').disabled"), true);
+        const disabled = "[document.getElementById('copy').disabled, document.getElementById('download').disabled]";
+        assert.deepEqual(await page.eval(disabled), [true, true]);
         await page.setInput(DINNER);
-        assert.equal(await page.eval("document.getElementById('download').disabled"), true);
+        assert.deepEqual(await page.eval(disabled), [true, true]);
         await page.click('#calculate');
-        assert.equal(await page.eval("document.getElementById('download').disabled"), false);
+        assert.deepEqual(await page.eval(disabled), [false, false]);
       });
 
-      it('disables Download again when the text is cleared after Calculate', async () => {
+      it('disables Copy report and Download again when the text is cleared after Calculate', async () => {
         const { page } = await openApp(1280, 800);
         await page.setInput(DINNER);
         await page.click('#calculate');
         await page.setInput('');
-        assert.equal(await page.eval("document.getElementById('download').disabled"), true);
+        assert.deepEqual(await page.eval("[document.getElementById('copy').disabled, document.getElementById('download').disabled]"), [true, true]);
       });
 
       it('downloads the report, then the expenses, as a .txt file', async () => {

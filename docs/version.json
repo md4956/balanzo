@@ -1,5 +1,5 @@
 {
-  "version": "5.0.1",
+  "version": "5.0.2",
   "breaking": false,
-  "summary": "The boxes and buttons keep their size when you open How it works or copy the report."
+  "summary": "Copy report stays off until a report has been calculated."
 }

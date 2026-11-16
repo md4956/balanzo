@@ -2,6 +2,11 @@
 
 All notable changes to this project are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and version numbers follow [Semantic Versioning](https://semver.org/). Versions before 1.0.0 may change behavior in a minor release.
 
+## [5.0.2] - 2026-11-16
+
+### Fixed
+- On the web page, Copy report is disabled until a report has been calculated, like Download, so it no longer copies the placeholder text. It is disabled again when the box is emptied.
+
 ## [5.0.1] - 2026-11-16
 
 ### Fixed

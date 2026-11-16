@@ -110,7 +110,7 @@ ben 30 ben cy</code>
     <section class="output">
       <pre id="report" class="placeholder" aria-live="polite">The report appears here.</pre>
       <div class="row">
-        <button id="copy">Copy report</button>
+        <button id="copy" disabled>Copy report</button>
         <button id="download" disabled>Download</button>
       </div>
     </section>
@@ -130,6 +130,7 @@ ben 30 ben cy</code>
   let calculatedOk = true;    // false when the last calculation stopped with an error
   let fileExt = '.txt';       // extension of the last loaded file, so Download keeps it
   const download = document.getElementById('download');
+  const copy = document.getElementById('copy');
 
   function calculate() {
     const result = Balanzo.run(input.value);
@@ -138,7 +139,7 @@ ben 30 ben cy</code>
     report.classList.remove('placeholder');
     calculatedText = input.value;
     updateStale();
-    updateDownload();
+    updateButtons();
     // Restart the highlight, so it shows on every calculation even when the report looks the same
     report.classList.remove('updated');
     void report.offsetWidth;
@@ -154,14 +155,14 @@ ben 30 ben cy</code>
     else status.textContent = calculatedOk ? 'Report updated.' : 'No report yet. Fix the line named under WARNINGS, then press Calculate.';
   }
 
-  // Download needs a calculation first, and some text to save; otherwise it would save an empty file
-  function updateDownload() {
-    download.disabled = calculatedText === null || !input.value.trim();
+  // Copy and Download need a calculation first, and some text; otherwise they would copy the placeholder or save an empty file
+  function updateButtons() {
+    copy.disabled = download.disabled = calculatedText === null || !input.value.trim();
   }
 
   input.addEventListener('input', () => {
     updateStale();
-    updateDownload();
+    updateButtons();
     saveDraft();
   });
 
@@ -233,7 +234,7 @@ ben 30 ben cy</code>
     if (event.dataTransfer.files[0]) loadFile(event.dataTransfer.files[0]);
   });
 
-  document.getElementById('copy').addEventListener('click', async (event) => {
+  copy.addEventListener('click', async (event) => {
     const button = event.target;
     try {
       await navigator.clipboard.writeText(report.textContent);
@@ -325,7 +326,7 @@ ben 30 ben cy</code>
   restoreDraft();
 
   // Bump APP_VERSION with each release, together with docs/version.json and CHANGELOG.md
-  const APP_VERSION = '5.0.1';
+  const APP_VERSION = '5.0.2';
   const updateBar = document.getElementById('update');
   const updateText = document.getElementById('update-text');
   document.getElementById('update-reload').addEventListener('click', () => location.reload());
