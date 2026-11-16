@@ -591,7 +591,7 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
         const file = path.join(tmp, 'notes.pdf');
         fs.writeFileSync(file, '%PDF-1.4');
         await page.uploadFile(file);
-        await page.waitFor("document.getElementById('report').textContent.startsWith('Not a .txt or .md file: notes.pdf')");
+        await page.waitFor("document.getElementById('status').textContent.startsWith('Not a .txt or .md file: notes.pdf')");
         assert.equal(await page.eval("document.getElementById('input').value"), 'ana 1 ana');
       });
 
@@ -612,8 +612,20 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
       it('rejects a dropped file that is neither .txt nor .md', async () => {
         const { page } = await openApp(1280, 800);
         await page.drop('photo.png', 'binary-ish', 'image/png');
-        await page.waitFor("document.getElementById('report').textContent.startsWith('Not a .txt or .md file: photo.png')");
+        await page.waitFor("document.getElementById('status').textContent.startsWith('Not a .txt or .md file: photo.png')");
         assert.equal(await page.eval("document.getElementById('input').value"), '');
+      });
+
+      it('keeps the report, and copies it, after a dropped file that is neither .txt nor .md', async () => {
+        const { page } = await openApp(1280, 800);
+        await page.setInput(DINNER);
+        await page.click('#calculate');
+        await page.drop('photo.png', 'binary-ish', 'image/png');
+        await page.waitFor("document.getElementById('status').textContent.startsWith('Not a .txt or .md file: photo.png')");
+        assert.equal(await page.eval("document.getElementById('report').textContent"), DINNER_REPORT);
+        await page.click('#copy');
+        await page.waitFor("document.getElementById('copy').textContent === 'Copied'");
+        assert.equal(await page.eval('navigator.clipboard.readText()'), DINNER_REPORT);
       });
 
       it('ignores dropped text that is not a file', async () => {
@@ -763,14 +775,30 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
         assert.equal(await page.eval("document.getElementById('copy').textContent"), 'Copy report');
       });
 
+      // Clicks Copy, waits long enough for a copy to finish, and returns what the clipboard holds
+      async function clickCopy(page) {
+        await page.click('#report');  // the clipboard only works in a focused page, and a fresh page has no focus yet
+        await page.eval("navigator.clipboard.writeText('clipboard before')");
+        await page.click('#copy');
+        await page.eval('new Promise((resolve) => setTimeout(resolve, 200))');
+        return page.eval('navigator.clipboard.readText()');
+      }
+
       it('keeps Copy report and Download disabled until Calculate is clicked', async () => {
-        const { page } = await openApp(1280, 800);
+        const { page, downloads } = await openApp(1280, 800);
         const disabled = "[document.getElementById('copy').disabled, document.getElementById('download').disabled]";
         assert.deepEqual(await page.eval(disabled), [true, true]);
+        assert.equal(await clickCopy(page), 'clipboard before');
         await page.setInput(DINNER);
         assert.deepEqual(await page.eval(disabled), [true, true]);
+        assert.equal(await clickCopy(page), 'clipboard before');
+        await page.click('#download');
+        await page.eval('new Promise((resolve) => setTimeout(resolve, 500))');
+        assert.deepEqual(fs.readdirSync(downloads), []);
+        assert.equal(await page.eval("document.getElementById('copy').textContent"), 'Copy report');
         await page.click('#calculate');
         assert.deepEqual(await page.eval(disabled), [false, false]);
+        assert.equal(await clickCopy(page), DINNER_REPORT);
       });
 
       it('disables Copy report and Download again when the text is cleared after Calculate', async () => {
@@ -779,6 +807,21 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
         await page.click('#calculate');
         await page.setInput('');
         assert.deepEqual(await page.eval("[document.getElementById('copy').disabled, document.getElementById('download').disabled]"), [true, true]);
+        assert.equal(await clickCopy(page), 'clipboard before');
+      });
+
+      it('disables Copy report while the report is out of date, and copies the new one after Calculate', async () => {
+        const { page } = await openApp(1280, 800);
+        await page.setInput('ana 1 ana');
+        await page.click('#calculate');
+        await page.setInput(DINNER);
+        assert.equal(await page.eval("document.getElementById('copy').disabled"), true);
+        assert.equal(await clickCopy(page), 'clipboard before');
+        await page.setInput('ana 1 ana');  // back to the calculated text: the report matches again
+        assert.equal(await page.eval("document.getElementById('copy').disabled"), false);
+        await page.setInput(DINNER);
+        await page.click('#calculate');
+        assert.equal(await clickCopy(page), DINNER_REPORT);
       });
 
       it('downloads the report, then the expenses, as a .txt file', async () => {

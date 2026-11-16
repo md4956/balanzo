@@ -98,6 +98,24 @@ for (const config of DRIVERS) {
       assert.equal(await driver.execute("return document.getElementById('input').value"), DINNER);
     });
 
+    it('copies only a report made from the text in the box', async (t) => {
+      await open(t, 1280, 800);
+      const copyState = "return [document.getElementById('copy').disabled, document.getElementById('copy').textContent]";
+      await driver.click('#copy');
+      assert.deepEqual(await driver.execute(copyState), [true, 'Copy report']);
+      await setInput(DINNER);
+      await driver.click('#copy');
+      assert.deepEqual(await driver.execute(copyState), [true, 'Copy report']);
+      await driver.click('#calculate');
+      await setInput(DINNER + 'Chloe 10 Chloe Anna\n');
+      await driver.click('#copy');
+      assert.deepEqual(await driver.execute(copyState), [true, 'Copy report']);
+      await driver.click('#calculate');
+      await driver.click('#copy');
+      // Copied, or, where the browser blocks the clipboard, the report selected for copying by hand
+      await driver.waitFor("document.getElementById('copy').textContent === 'Copied' || getSelection().toString().includes('PAYMENTS')");
+    });
+
     it('does not download an out-of-date report, and asks for Calculate', async (t) => {
       await open(t, 1280, 800);
       await setInput(DINNER);

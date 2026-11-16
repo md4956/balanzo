@@ -155,9 +155,11 @@ ben 30 ben cy</code>
     else status.textContent = calculatedOk ? 'Report updated.' : 'No report yet. Fix the line named under WARNINGS, then press Calculate.';
   }
 
-  // Copy and Download need a calculation first, and some text; otherwise they would copy the placeholder or save an empty file
+  // Copy needs a report made from the text in the box, so an out-of-date report is not pasted to others.
+  // Download needs a calculation first, and some text to save; when out of date it asks for Calculate instead.
   function updateButtons() {
-    copy.disabled = download.disabled = calculatedText === null || !input.value.trim();
+    copy.disabled = calculatedText !== input.value || !input.value.trim();
+    download.disabled = calculatedText === null || !input.value.trim();
   }
 
   input.addEventListener('input', () => {
@@ -195,8 +197,8 @@ ben 30 ben cy</code>
   // Shared by the file picker and drag and drop
   async function loadFile(file) {
     if (!/\.(txt|md)$/i.test(file.name) && !['text/plain', 'text/markdown'].includes(file.type)) {
-      report.textContent = `Not a .txt or .md file: ${file.name}`;
-      report.classList.remove('placeholder');
+      // In the status line, so the report, Copy and Download still match each other
+      status.textContent = `Not a .txt or .md file: ${file.name}`;
       return;
     }
     fileExt = /\.md$/i.test(file.name) ? '.md' : '.txt';
