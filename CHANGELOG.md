@@ -5,7 +5,7 @@ All notable changes to this project are listed here. The format follows [Keep a 
 ## [5.0.3] - 2026-11-16
 
 ### Fixed
-- On the web page, the draft note under the boxes (such as `Draft saved on this device at 22:10.`) no longer moves the page when it appears. On tablets and desktops it used to make the input and report boxes shorter. The note for a browser that blocks storage is shorter, so it fits on one line on phones.
+- On the web page, the draft note under the boxes (such as `Draft saved on this device at 22:10.`) no longer moves the page when it appears. On tablets and desktops it used to make the input and report boxes shorter. On phones it keeps room for two lines.
 
 ## [5.0.2] - 2026-11-16
 
