@@ -7,12 +7,23 @@
 
 const { describe, it, before, after } = require('node:test');
 const assert = require('node:assert/strict');
+const { execFileSync } = require('node:child_process');
 const { WebDriver } = require('./webdriver');
 const { serveDocs } = require('./support');
 
+// Process ids of a running app, so the tests can quit only an app they started
+const appPids = (app) => {
+  try {
+    return execFileSync('pgrep', ['-x', app]).toString().split('\n').filter(Boolean).map(Number);
+  } catch {
+    return [];  // pgrep exits 1 when nothing matches
+  }
+};
+
 const DINNER = '# Dinner\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\n';
 const DRIVERS = [
-  { name: 'Safari', command: 'safaridriver', args: ['-p', '4445'], port: 4445, capabilities: { browserName: 'safari' } },
+  // Safari has no headless mode, and safaridriver leaves Safari running after the session ends
+  { name: 'Safari', command: 'safaridriver', args: ['-p', '4445'], port: 4445, capabilities: { browserName: 'safari' }, app: 'Safari' },
   {
     name: 'Firefox',
     command: 'geckodriver',
@@ -28,8 +39,10 @@ for (const config of DRIVERS) {
     let base;
     let driver = null;
     let skip = null;
+    let appWasRunning = [];
 
     before(async () => {
+      if (config.app) appWasRunning = appPids(config.app);
       server = await serveDocs();
       base = `http://127.0.0.1:${server.address().port}/`;
       try {
@@ -41,6 +54,8 @@ for (const config of DRIVERS) {
 
     after(async () => {
       await driver?.quit();
+      // Quit the app only if the driver started it, so a Safari the user had open stays open
+      if (config.app) for (const pid of appPids(config.app)) if (!appWasRunning.includes(pid)) process.kill(pid);
       server?.close();
     });
 
