@@ -28,4 +28,4 @@ jobs:
         run: python3 -m unittest discover -s tests
 
       - name: Browser tests (Chrome and Edge if installed)
-        run: node --test tests/web/
+        run: node --test tests/web/browser.test.js tests/web/cross-browser.test.js

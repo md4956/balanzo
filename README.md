@@ -49,7 +49,7 @@ python3 -m unittest discover -s tests
 The web page has browser tests (layout, input, buttons, drafts, updates, page loading, output text and files, offline). They need Node.js 22 or newer. The full suite runs in Chrome and Microsoft Edge; set `CHROME_PATH` or `EDGE_PATH` if they are not in a standard place. A smaller suite also runs in Safari and Firefox when their drivers are running: `sudo safaridriver --enable` once for Safari, and `geckodriver` on the PATH for Firefox. A browser that is not available is skipped, and the test output says so:
 
 ```bash
-node --test tests/web/
+node --test tests/web/browser.test.js tests/web/cross-browser.test.js
 ```
 
 You get:
