@@ -362,13 +362,19 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
       });
 
       it('keeps the button widths when Copy report changes to Copied', async () => {
-        for (const [width, mobile] of [[1280, false], [390, true]]) {
+        for (const [width, mobile] of [[1280, false], [390, true], [320, true]]) {
           const { page } = await openApp(width, 800, mobile);
           const widths = "[...document.querySelectorAll('.row button')].map((el) => Math.round(el.getBoundingClientRect().width)).join()";
           const before = await page.eval(widths);
           await page.eval("document.getElementById('copy').textContent = 'Copied'");
           assert.equal(await page.eval(widths), before, `buttons at ${width}px wide`);
         }
+      });
+
+      it('keeps every button label on one line on a 320px phone', async () => {
+        const { page } = await openApp(320, 640, true);
+        const heights = await page.eval("[...document.querySelectorAll('.row button')].map((el) => Math.round(el.getBoundingClientRect().height))");
+        assert.equal(new Set(heights).size, 1, `button heights differ: ${heights}`);
       });
 
       it('makes every button at least 44px tall on a phone', async () => {
