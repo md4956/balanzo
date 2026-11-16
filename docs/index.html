@@ -36,6 +36,8 @@
   button.nudge { animation: flash 1.2s ease-out; }
   @media (prefers-reduced-motion: reduce) { pre.updated, button.nudge { animation: none; } }
   .hint { margin: 8px 0 0; color: var(--muted); font-size: 0.85rem; }
+  /* Room kept for the draft note while it is empty, so it appearing does not move the page: two lines on phones, where wrapping depends on the font */
+  #draft { min-height: 2.4em; line-height: 1.2; }
   .guide { margin: 0 0 12px; }
   .guide summary { cursor: pointer; padding: 12px 0; color: var(--accent); }  /* 44px tall, easy to tap */
   .guide ol { margin: 0 0 8px; padding-left: 20px; }
@@ -74,6 +76,7 @@
     .workspace { flex: 1; min-height: 0; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
     .input, .output { display: flex; flex-direction: column; min-height: 0; }
     textarea, pre { flex: 1; height: auto; min-height: 160px; }
+    #draft { min-height: 1.2em; }
   }
 </style>
 </head>
@@ -328,7 +331,7 @@ ben 30 ben cy</code>
   restoreDraft();
 
   // Bump APP_VERSION with each release, together with docs/version.json and CHANGELOG.md
-  const APP_VERSION = '5.0.2';
+  const APP_VERSION = '5.0.3';
   const updateBar = document.getElementById('update');
   const updateText = document.getElementById('update-text');
   document.getElementById('update-reload').addEventListener('click', () => location.reload());

@@ -374,6 +374,19 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
         }
       });
 
+      it('keeps the layout still when a draft note appears', async () => {
+        const notes = ['Draft saved on this device at 22:10.', 'Draft restored from 22:10.', 'Draft not saved: this browser does not allow local storage here.'];
+        for (const [width, mobile] of [[1280, false], [390, true], [320, true]]) {
+          const { page } = await openApp(width, 800, mobile);
+          const layout = "['#input', '#report', 'footer'].map((sel) => JSON.stringify(document.querySelector(sel).getBoundingClientRect())).join()";
+          const before = await page.eval(layout);
+          for (const note of notes) {
+            await page.eval(`document.getElementById('draft').textContent = ${JSON.stringify(note)}`);
+            assert.equal(await page.eval(layout), before, `"${note}" at ${width}px wide`);
+          }
+        }
+      });
+
       it('keeps every button label on one line on a 320px phone', async () => {
         const { page } = await openApp(320, 640, true);
         const heights = await page.eval("[...document.querySelectorAll('.row button')].map((el) => Math.round(el.getBoundingClientRect().height))");
