@@ -7,6 +7,7 @@ All notable changes to this project are listed here. The format follows [Keep a 
 ### Fixed
 - On the web page, Copy report is disabled until the text in the box has been calculated, so it no longer copies the placeholder text, or an out-of-date report after the text was changed. It is disabled again when the box is emptied.
 - On the web page, choosing or dropping a file that is not .txt or .md shows the message in the status line and keeps the report, instead of replacing the report, so Copy and Download still match what is on screen.
+- On the web page, screen readers read out the status line, such as `Not a .txt or .md file` or `Text changed. Press Calculate to update the report.`
 
 ## [5.0.1] - 2026-11-16
 

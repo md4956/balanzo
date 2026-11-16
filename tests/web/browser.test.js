@@ -979,10 +979,11 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
         assert.ok(elapsed < 3000, `took ${elapsed.toFixed(0)}ms`);
       });
 
-      it('labels the input and announces new reports to screen readers', async () => {
+      it('labels the input and announces new reports and status messages to screen readers', async () => {
         const { page } = await openApp(1280, 800);
         assert.equal(await page.eval("document.getElementById('input').getAttribute('aria-label')"), 'Expenses');
         assert.equal(await page.eval("document.getElementById('report').getAttribute('aria-live')"), 'polite');
+        assert.equal(await page.eval("document.getElementById('status').getAttribute('role')"), 'status');
       });
 
       it('still opens and calculates with no network, after one visit', async () => {
