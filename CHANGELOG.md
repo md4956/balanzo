@@ -11,11 +11,14 @@ All notable changes to this project are listed here. The format follows [Keep a 
 - On the web page, the layout fills the window on tablets and desktops, so nothing scrolls on a laptop, tablet or landscape phone. On phones, Calculate stays on screen.
 - On the web page, the app icon is a `D` for now, until a proper icon is made.
 - On the web page, the offline cache includes the apple-touch icon, and its version is bumped so the new files are used.
+- On the web page, Download no longer saves a report that is out of date or stopped with an error. It asks you to press Calculate first, and highlights the button.
 
 ### Added
 - `HOW I READ IT` after the summary: each expense as the script understood it, so you can check the file was read correctly.
 - On the web page, a draft of the box is kept on this device. It is restored on the next visit, dropped when the box is emptied, and dropped after 30 days without an edit.
 - On the web page, `Load .txt or .md` is a button, so it works from the keyboard.
+- On the web page, an open page shows a notice with a Reload button when a newer version is published (`docs/version.json`). A breaking release says what changed.
+- Browser tests in Safari and Firefox, through WebDriver, when their drivers are running.
 
 ## [4.0.0] - 2026-11-16
 

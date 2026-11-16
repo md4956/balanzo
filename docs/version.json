@@ -1,0 +1,5 @@
+{
+  "version": "5.0.0",
+  "breaking": true,
+  "summary": "Names ignore upper and lower case, so Ana and ana are one person."
+}

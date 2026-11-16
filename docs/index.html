@@ -33,7 +33,8 @@
   pre.stale { opacity: 0.55; }
   pre.updated { animation: flash 1.2s ease-out; }
   @keyframes flash { from { box-shadow: 0 0 0 3px var(--accent); } to { box-shadow: 0 0 0 0 transparent; } }
-  @media (prefers-reduced-motion: reduce) { pre.updated { animation: none; } }
+  button.nudge { animation: flash 1.2s ease-out; }
+  @media (prefers-reduced-motion: reduce) { pre.updated, button.nudge { animation: none; } }
   .hint { margin: 8px 0 0; color: var(--muted); font-size: 0.85rem; }
   .status { min-height: 1.2em; margin: 0 0 8px; color: var(--muted); font-size: 0.85rem; }
   .row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
@@ -44,6 +45,9 @@
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   button:disabled { opacity: 0.5; cursor: default; }
   input[type="file"] { display: none; }
+  .update { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 16px; background: var(--accent); color: #fff; font-size: 0.95rem; }
+  .update[hidden] { display: none; }
+  .update button { flex: 0 0 auto; padding: 6px 14px; background: #fff; color: var(--accent); border-color: #fff; }
   .workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .output .row { margin-top: 10px; }
   #drop {
@@ -54,8 +58,8 @@
   body.dragging #drop { display: flex; }
   /* Tablets and desktops: input and report side by side, filling the window, so nothing scrolls */
   @media (min-width: 700px) {
-    body { height: 100vh; height: 100dvh; }
-    main { height: 100%; box-sizing: border-box; padding: 16px 20px; display: flex; flex-direction: column; }
+    body { height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+    main { flex: 1; min-height: 0; box-sizing: border-box; padding: 16px 20px; display: flex; flex-direction: column; }
     h1 { margin: 0 0 8px; }
     .workspace { flex: 1; min-height: 0; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
     .input, .output { display: flex; flex-direction: column; min-height: 0; }
@@ -64,6 +68,10 @@
 </style>
 </head>
 <body>
+<div id="update" class="update" role="status" hidden>
+  <span id="update-text"></span>
+  <button type="button" id="update-reload">Reload</button>
+</div>
 <main>
   <h1>Balanzo</h1>
   <p class="status" id="status"></p>
@@ -222,6 +230,17 @@
 
   // The report first, then the expenses it was made from, so the file explains itself
   download.addEventListener('click', () => {
+    // Download must match the report on screen, so an out-of-date or failed report is not saved
+    if (!calculatedOk || calculatedText !== input.value) {
+      status.textContent = calculatedOk
+        ? 'Not downloaded: the report on screen is out of date. Press Calculate first, then Download.'
+        : 'Not downloaded: there is no report yet. Fix the line named under WARNINGS, press Calculate, then Download.';
+      const calc = document.getElementById('calculate');
+      calc.classList.remove('nudge');
+      void calc.offsetWidth;  // restart the highlight
+      calc.classList.add('nudge');
+      return;
+    }
     const text = `${Balanzo.run(input.value).text}\nEXPENSES\n${input.value}`;
     const url = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
     const link = document.createElement('a');
@@ -282,6 +301,41 @@
   });
 
   restoreDraft();
+
+  // Bump APP_VERSION with each release, together with docs/version.json and CHANGELOG.md
+  const APP_VERSION = '5.0.0';
+  const updateBar = document.getElementById('update');
+  const updateText = document.getElementById('update-text');
+  document.getElementById('update-reload').addEventListener('click', () => location.reload());
+
+  // True when version a is newer than version b, comparing 1.2.3 numbers part by part
+  const newerThan = (a, b) => {
+    const [x, y] = [a, b].map((v) => v.split('.').map(Number));
+    for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] > y[i];
+    return false;
+  };
+
+  // Asks docs/version.json, which the network serves fresh, so a tab that is already open learns
+  // about a new release. Offline, the cached copy can be older, and is then ignored.
+  async function checkForUpdate() {
+    try {
+      const latest = await (await fetch('version.json', { cache: 'no-store' })).json();
+      if (!newerThan(latest.version, APP_VERSION)) return false;
+      updateText.textContent = latest.breaking
+        ? `Balanzo ${latest.version} changes how things work: ${latest.summary} Reload before you calculate.`
+        : `Balanzo ${latest.version} is ready. Reload to get the latest version.`;
+      updateBar.hidden = false;
+      return true;
+    } catch {
+      return false;  // offline, or the file is missing: nothing to announce
+    }
+  }
+
+  checkForUpdate();
+  setInterval(checkForUpdate, 60 * 60 * 1000);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) checkForUpdate();
+  });
 
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>

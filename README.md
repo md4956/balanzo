@@ -16,7 +16,7 @@ The same tool runs as a web page: **https://md4956.github.io/balanzo/** (the `do
 2. Tap **Calculate**. Ctrl+Enter or ⌘+Enter works too.
 3. Read the report, or tap **Copy report** to paste it into a messenger.
 
-**Download** saves a `.txt` or `.md` file, matching the file you loaded. It starts with the report, then an `EXPENSES` heading and the expenses it was made from. Download is off until you tap Calculate, and while the box is empty. The page works offline after the first visit. To keep it on the home screen, use "Add to Home Screen" in Safari or Chrome.
+**Download** saves a `.txt` or `.md` file, matching the file you loaded. If the report on screen is out of date, or the last calculation stopped with an error, Download saves nothing: it asks you to press Calculate first, and highlights the button. It starts with the report, then an `EXPENSES` heading and the expenses it was made from. Download is off until you tap Calculate, and while the box is empty. The page works offline after the first visit. To keep it on the home screen, use "Add to Home Screen" in Safari or Chrome.
 
 **Draft:** the text in the box is kept on this device as you type, and it is back the next time you open the page. Emptying the box clears it, and a draft that has not been edited for 30 days is dropped. Nothing is sent anywhere, but on a shared computer, empty the box when you are done.
 
@@ -46,7 +46,7 @@ To run the tests (they only use the Python standard library):
 python3 -m unittest discover -s tests
 ```
 
-The web page has browser tests (layout, input, buttons, page loading, output text and files, offline). They need Node.js 22 or newer and Chrome; set `CHROME_PATH` if Chrome is not in a standard place:
+The web page has browser tests (layout, input, buttons, drafts, updates, page loading, output text and files, offline). They need Node.js 22 or newer. The full suite runs in Chrome and Microsoft Edge; set `CHROME_PATH` or `EDGE_PATH` if they are not in a standard place. A smaller suite also runs in Safari and Firefox when their drivers are running: `sudo safaridriver --enable` once for Safari, and `geckodriver` on the PATH for Firefox. A browser that is not available is skipped, and the test output says so:
 
 ```bash
 node --test tests/web/
@@ -243,7 +243,8 @@ To publish a new version, in the same pull request:
 
 1. Add a CHANGELOG section with the new version and today's date, above the previous one.
 2. Update the "This README describes version" line above to the new version.
-3. Merge to `main`. The tests check that steps 1 and 2 agree.
+3. In `docs/index.html`, set `APP_VERSION` to the new version. In `docs/version.json`, set `version` to the new version, `breaking` to `true` when people must reload before they calculate, and `summary` to one sentence about what changed. An open web page shows a notice with a Reload button when it finds this file has a newer version, and the notice says what changed for a breaking release.
+4. Merge to `main`. The tests check that steps 1 to 3 agree.
 
 ## Limitations
 

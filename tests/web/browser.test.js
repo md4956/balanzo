@@ -10,8 +10,8 @@ const http = require('node:http');
 const os = require('node:os');
 const path = require('node:path');
 const { spawn } = require('node:child_process');
+const { serveDocs } = require('./support');
 
-const DOCS = path.resolve(__dirname, '..', '..', 'docs');
 const CHROME = [
   process.env.CHROME_PATH,
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
@@ -19,10 +19,10 @@ const CHROME = [
   '/usr/bin/chromium',
 ].find((candidate) => candidate && fs.existsSync(candidate));
 const EDGE = [
+  process.env.EDGE_PATH,
   '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
   '/usr/bin/microsoft-edge',
 ].find((candidate) => fs.existsSync(candidate));
-const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml' };
 const DINNER = '# Dinner\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\n';
 // [width, height, touch] for the screens people actually use: laptops, desktops, tablets, a landscape phone
 const DESKTOP_SIZES = [[1440, 900, false], [1512, 982, false], [1280, 720, false], [1024, 768, true], [1180, 820, true], [768, 1024, true], [834, 1194, true], [844, 390, true]];
@@ -39,23 +39,6 @@ const DINNER_REPORT = [
   'Anna paid 60.00, split between Anna, Ben, Chloe',
   'Ben paid 30.00, split between Ben, Chloe',
 ].join('\n') + '\n';
-
-// Static server for docs/, so the service worker and the manifest work as they would on GitHub Pages
-function serveDocs() {
-  return new Promise((resolve) => {
-    const server = http.createServer((req, res) => {
-      const name = new URL(req.url, 'http://localhost').pathname.replace(/^\//, '') || 'index.html';
-      const file = path.join(DOCS, name);
-      if (!file.startsWith(DOCS) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
-        res.writeHead(404, { 'content-type': 'text/plain' }).end('not found');
-        return;
-      }
-      res.writeHead(200, { 'content-type': TYPES[path.extname(file)] || 'application/octet-stream' });
-      fs.createReadStream(file).pipe(res);
-    });
-    server.listen(0, '127.0.0.1', () => resolve(server));
-  });
-}
 
 function launchChrome(executable, profile) {
   const proc = spawn(executable, ['--headless=new', '--disable-gpu', '--no-sandbox', '--no-first-run',
@@ -247,6 +230,8 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
       const page = await newPage(width, height, mobile);
       const downloads = fs.mkdtempSync(path.join(tmp, 'downloads-'));
       await page.call('Page.setDownloadBehavior', { behavior: 'allow', downloadPath: downloads });
+      // Cancel drafts that pages from earlier tests are still waiting to save, so they cannot come back
+      for (const old of pages) await old.eval("typeof draftTimer !== 'undefined' && clearTimeout(draftTimer)").catch(() => {});
       await page.goto(base);
       await page.eval("localStorage.clear()");  // no draft left over from an earlier test
       await page.goto(base);
@@ -359,7 +344,7 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
 
       it('makes every button at least 44px tall on a phone', async () => {
         const { page } = await openApp(390, 844, true);
-        const heights = await page.eval("[...document.querySelectorAll('button, label.button')].map((el) => el.getBoundingClientRect().height)");
+        const heights = await page.eval("[...document.querySelectorAll('button:not(#update-reload), label.button')].map((el) => el.getBoundingClientRect().height)");
         assert.equal(heights.length, 4, 'Copy, Calculate, Download and Load .txt or .md');
         heights.forEach((height) => assert.ok(height >= 44, `button only ${height}px tall`));
       });
@@ -630,7 +615,37 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
       });
     });
 
-    describe('draft', () => {
+    describe('updates', () => {
+      it('shows no notice when the open page is the latest version', async () => {
+        const { page } = await openApp(1280, 800);
+        assert.equal(await page.eval("document.getElementById('update').hidden"), true);
+        assert.equal(await page.eval('checkForUpdate()'), false);
+      });
+
+      it('tells an open page about a newer version', async () => {
+        const { page } = await openApp(1280, 800);
+        await page.eval("window.fetch = async () => ({ json: async () => ({ version: '5.1.0', breaking: false, summary: '' }) })");
+        assert.equal(await page.eval('checkForUpdate()'), true);
+        assert.equal(await page.eval("document.getElementById('update').hidden"), false);
+        assert.equal(await page.eval("document.getElementById('update-text').textContent"), 'Balanzo 5.1.0 is ready. Reload to get the latest version.');
+      });
+
+      it('says what changed when the newer version is breaking', async () => {
+        const { page } = await openApp(1280, 800);
+        await page.eval("window.fetch = async () => ({ json: async () => ({ version: '6.0.0', breaking: true, summary: 'Names changed.' }) })");
+        await page.eval('checkForUpdate()');
+        assert.equal(await page.eval("document.getElementById('update-text').textContent"), 'Balanzo 6.0.0 changes how things work: Names changed. Reload before you calculate.');
+      });
+
+      it('ignores an older version, such as a copy from the offline cache', async () => {
+        const { page } = await openApp(1280, 800);
+        await page.eval("window.fetch = async () => ({ json: async () => ({ version: '4.0.0', breaking: true, summary: 'Old.' }) })");
+        assert.equal(await page.eval('checkForUpdate()'), false);
+        assert.equal(await page.eval("document.getElementById('update').hidden"), true);
+      });
+    });
+
+      describe('draft', () => {
       const DAY = 24 * 60 * 60 * 1000;
 
       it('saves the text in the box on this device and restores it on the next visit', async () => {
@@ -740,14 +755,37 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
         assert.equal(fs.readFileSync(path.join(downloads, name), 'utf8'), DINNER_REPORT + '\nEXPENSES\n' + DINNER);
       });
 
-      it('downloads the report of the text in the box, even when it changed after Calculate', async () => {
+      it('asks for Calculate instead of downloading a report that is out of date', async () => {
         const { page, downloads } = await openApp(1280, 800);
         await page.setInput(DINNER);
         await page.click('#calculate');
         await page.setInput(DINNER + 'Chloe 10 Chloe Anna\n');
         await page.click('#download');
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        assert.deepEqual(fs.readdirSync(downloads), []);
+        assert.match(await page.eval("document.getElementById('status').textContent"), /^Not downloaded: the report on screen is out of date/);
+        assert.equal(await page.eval("document.getElementById('calculate').classList.contains('nudge')"), true);
+      });
+
+      it('downloads the new text once Calculate has been pressed again', async () => {
+        const { page, downloads } = await openApp(1280, 800);
+        await page.setInput(DINNER);
+        await page.click('#calculate');
+        await page.setInput(DINNER + 'Chloe 10 Chloe Anna\n');
+        await page.click('#calculate');
+        await page.click('#download');
         const [name] = await waitForDownload(downloads);
         assert.match(fs.readFileSync(path.join(downloads, name), 'utf8'), /\nEXPENSES\n# Dinner\nAnna 60 Anna Ben Chloe\nBen 30 Ben Chloe\nChloe 10 Chloe Anna\n$/);
+      });
+
+      it('does not download a report that stopped with an error', async () => {
+        const { page, downloads } = await openApp(1280, 800);
+        await page.setInput('ana 10 ana*\n');
+        await page.click('#calculate');
+        await page.click('#download');
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        assert.deepEqual(fs.readdirSync(downloads), []);
+        assert.match(await page.eval("document.getElementById('status').textContent"), /^Not downloaded: there is no report yet/);
       });
 
       it('downloads an untitled file under the expenses name', async () => {
