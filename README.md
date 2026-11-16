@@ -10,7 +10,7 @@ Python 3. No external packages.
 
 ## Web version (phone and desktop)
 
-The same tool runs as a web page: **https://md4956.github.io/balanzo/** (the `docs` folder, published with GitHub Pages). Nothing is sent to a server.
+The same tool runs as a web page: **https://mdortaj.github.io/balanzo/** (the `docs` folder, published with GitHub Pages). Nothing is sent to a server.
 
 1. Paste your expenses into the box, or tap **Load .txt or .md**. You can also drop a file anywhere on the page.
 2. Tap **Calculate**. Ctrl+Enter or ⌘+Enter works too.
@@ -24,7 +24,7 @@ The page shows the same report as the script. How to write the expenses is expla
 
 ## Quick start
 
-Download `balanzo.py` from the [latest release](https://github.com/md4956/balanzo/releases/latest), or clone the repo.
+Download `balanzo.py` from the [latest release](https://github.com/mdortaj/balanzo/releases/latest), or clone the repo.
 
 Save this as `dinner.txt` (or `dinner.md`, which works the same way):
 
@@ -236,7 +236,7 @@ On the web page, the status line says `No report yet` when the report stopped wi
 
 ## Versions and releases
 
-Each version in [CHANGELOG.md](CHANGELOG.md) has a [GitHub release](https://github.com/md4956/balanzo/releases) with `balanzo.py` attached. The newest version is marked as the latest release, and that's the one the download link above points to.
+Each version in [CHANGELOG.md](CHANGELOG.md) has a [GitHub release](https://github.com/mdortaj/balanzo/releases) with `balanzo.py` attached. The newest version is marked as the latest release, and that's the one the download link above points to.
 
 Releases are automatic. When a change that adds a version is merged to `main`, the release workflow (`.github/workflows/release.yml`) creates that version's release, with its CHANGELOG section as the notes. Pushes that don't add a version create nothing.
 
