@@ -1,6 +1,7 @@
 """Checks that CHANGELOG.md, the README and the release script agree. Run with: python3 -m unittest discover -s tests"""
 
 import importlib.util
+import json
 import re
 import subprocess
 import sys
@@ -39,6 +40,14 @@ class ReleaseTests(unittest.TestCase):
         match = re.search(r"This README describes version (\d+\.\d+\.\d+)", readme)
         self.assertIsNotNone(match, "the README should say which version it describes")
         self.assertEqual(match.group(1), release.latest(), "update the README version line with the CHANGELOG")
+
+    def test_web_page_and_version_file_name_the_latest_version(self):
+        page = (ROOT / "docs" / "index.html").read_text(encoding="utf-8")
+        match = re.search(r"const APP_VERSION = '([\d.]+)'", page)
+        self.assertIsNotNone(match, "docs/index.html should set APP_VERSION")
+        self.assertEqual(match.group(1), release.latest(), "update APP_VERSION in docs/index.html with the CHANGELOG")
+        version = json.loads((ROOT / "docs" / "version.json").read_text(encoding="utf-8"))
+        self.assertEqual(version["version"], release.latest(), "update docs/version.json with the CHANGELOG")
 
     def test_notes_command_prints_the_latest_notes(self):
         result = subprocess.run([sys.executable, str(ROOT / "scripts" / "release.py"), "notes", release.latest()],

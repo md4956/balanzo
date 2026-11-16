@@ -252,7 +252,7 @@ class InputParsingTests(unittest.TestCase):
 
     def test_only_comma_is_an_invalid_related_list(self):
         stdout, _ = run_script("nik 100 ,\n")
-        self.assertIn("Invalid related_to list in line: nik 100 ,", stdout)
+        self.assertIn("Invalid line: nik 100 ,. Name at least one person", stdout)
 
     def test_non_finite_amounts_are_rejected(self):
         for amount in ["nan", "inf", "-inf", "Infinity", "1e999"]:
@@ -281,6 +281,27 @@ class InputParsingTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn("Warning: '_' in a name", stdout)
         self.assertIn("c pays ana_b 5.00", stdout)
+
+    def test_names_ignore_upper_and_lower_case_and_show_the_first_spelling(self):
+        stdout, code = run_script("ana 60 ana Ben\nAna 30 ben\n")
+        self.assertEqual(code, 0)
+        self.assertIn("ana gets 60.00", stdout)
+        self.assertIn("Ben owes 60.00", stdout)
+        self.assertIn("Note: 'Ana' is counted as 'ana'", stdout)
+        self.assertNotIn("Ana gets", stdout)
+
+    def test_preview_lists_each_expense_as_read_before_the_warnings(self):
+        stdout, _ = run_script("nik 90 nik, eva, tom\nbad line\n")
+        self.assertIn("HOW I READ IT\nnik paid 90.00, split between nik, eva, tom\n", stdout)
+        self.assertLess(stdout.index("HOW I READ IT"), stdout.index("WARNINGS"))
+
+    def test_preview_keeps_repeated_names_and_currency(self):
+        stdout, _ = run_script("@EUR\nsam 900 sam ana ana lia\n")
+        self.assertIn("sam paid 900.00 EUR, split between sam, ana, ana, lia", stdout)
+
+    def test_no_preview_when_no_expense_is_read(self):
+        stdout, _ = run_script("nik 10\n")
+        self.assertNotIn("HOW I READ IT", stdout)
 
     def test_missing_file_exits_with_error(self):
         result = subprocess.run([sys.executable, str(SCRIPT), "/no/such/file.txt"], capture_output=True, text=True)
@@ -461,6 +482,10 @@ Ben owes 5.00
 Chloe owes 35.00
 
 3 people, 2 payments, total 0.00
+
+HOW I READ IT
+Anna paid 60.00, split between Anna, Ben, Chloe
+Ben paid 30.00, split between Ben, Chloe
 """
         self.assertEqual(stdout, expected)
 

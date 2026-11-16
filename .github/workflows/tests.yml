@@ -1,0 +1,31 @@
+# Runs the Python and browser tests on every pull request and on pushes to main.
+# Safari and Firefox are skipped here, because their drivers are not on the runner.
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Python tests
+        run: python3 -m unittest discover -s tests
+
+      - name: Browser tests (Chrome and Edge if installed)
+        run: node --test tests/web/browser.test.js tests/web/cross-browser.test.js

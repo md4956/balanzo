@@ -13,7 +13,6 @@
   :root {
     color-scheme: light dark;
     --bg: #f6f7f9; --fg: #1d1f23; --muted: #6b7280; --card: #ffffff; --accent: #2f6fed; --line: #d9dce1;
-    --box-h: 320px;  /* input and report share this height, so their edges and button rows line up */
   }
   @media (prefers-color-scheme: dark) {
     :root { --bg: #16181d; --fg: #eceef2; --muted: #9aa1ad; --card: #21242b; --accent: #6ea0ff; --line: #383d47; }
@@ -23,7 +22,7 @@
   main { max-width: 1200px; margin: 0 auto; padding: 16px; }
   h1 { font-size: 1.4rem; margin: 8px 0 12px; }
   textarea, pre {
-    width: 100%; height: var(--box-h); background: var(--card); color: var(--fg);
+    width: 100%; height: 40vh; min-height: 200px; background: var(--card); color: var(--fg);
     border: 1px solid var(--line); border-radius: 10px; padding: 12px;
     font-family: ui-monospace, Menlo, monospace;
   }
@@ -34,7 +33,8 @@
   pre.stale { opacity: 0.55; }
   pre.updated { animation: flash 1.2s ease-out; }
   @keyframes flash { from { box-shadow: 0 0 0 3px var(--accent); } to { box-shadow: 0 0 0 0 transparent; } }
-  @media (prefers-reduced-motion: reduce) { pre.updated { animation: none; } }
+  button.nudge { animation: flash 1.2s ease-out; }
+  @media (prefers-reduced-motion: reduce) { pre.updated, button.nudge { animation: none; } }
   .hint { margin: 8px 0 0; color: var(--muted); font-size: 0.85rem; }
   .guide { margin: 0 0 12px; }
   .guide summary { cursor: pointer; padding: 12px 0; color: var(--accent); }  /* 44px tall, easy to tap */
@@ -52,6 +52,9 @@
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   button:disabled { opacity: 0.5; cursor: default; }
   input[type="file"] { display: none; }
+  .update { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 16px; background: var(--accent); color: #fff; font-size: 0.95rem; }
+  .update[hidden] { display: none; }
+  .update button { flex: 0 0 auto; padding: 6px 14px; background: #fff; color: var(--accent); border-color: #fff; }
   .workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .output .row { margin-top: 10px; }
   #drop {
@@ -60,14 +63,22 @@
     pointer-events: none;
   }
   body.dragging #drop { display: flex; }
-  @media (min-width: 900px) {
-    :root { --box-h: max(480px, 70vh); }
-    main { padding: 24px; }
-    .workspace { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  /* Tablets and desktops: input and report side by side, filling the window, so nothing scrolls */
+  @media (min-width: 700px) {
+    body { height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+    main { flex: 1; min-height: 0; box-sizing: border-box; padding: 16px 20px; display: flex; flex-direction: column; }
+    h1 { margin: 0 0 8px; }
+    .workspace { flex: 1; min-height: 0; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .input, .output { display: flex; flex-direction: column; min-height: 0; }
+    textarea, pre { flex: 1; height: auto; min-height: 160px; }
   }
 </style>
 </head>
 <body>
+<div id="update" class="update" role="status" hidden>
+  <span id="update-text"></span>
+  <button type="button" id="update-reload">Reload</button>
+</div>
 <main>
   <h1>Balanzo</h1>
   <details class="guide">
@@ -88,10 +99,9 @@ ben 30 ben cy</code>
       <textarea id="input" aria-label="Expenses" spellcheck="false" placeholder="# Dinner&#10;Anna 60 Anna Ben Chloe&#10;Ben 30 Ben Chloe"></textarea>
       <div class="row">
         <button class="primary" id="calculate">Calculate</button>
-        <label class="button" for="file">Load .txt or .md</label>
+        <button type="button" class="button" id="load">Load .txt or .md</button>
         <input type="file" id="file" accept=".txt,.md,text/plain,text/markdown">
       </div>
-      <p class="hint">Ctrl+Enter or ⌘+Enter calculates. You can also drop a .txt or .md file anywhere on this page.</p>
     </section>
 
     <section class="output">
@@ -102,6 +112,8 @@ ben 30 ben cy</code>
       </div>
     </section>
   </div>
+  <p class="hint">Ctrl+Enter or ⌘+Enter calculates. You can also drop a .txt or .md file anywhere on this page.</p>
+  <p class="hint" id="draft"></p>
   <footer>Balanzo is a hobby project. <a href="https://github.com/md4956/balanzo">Source code and developer on GitHub</a></footer>
 </main>
 <div id="drop">Drop the .txt or .md file here</div>
@@ -112,11 +124,14 @@ ben 30 ben cy</code>
   const report = document.getElementById('report');
   const status = document.getElementById('status');
   let calculatedText = null;  // the input the report was made from
+  let calculatedOk = true;    // false when the last calculation stopped with an error
   let fileExt = '.txt';       // extension of the last loaded file, so Download keeps it
   const download = document.getElementById('download');
 
   function calculate() {
-    report.textContent = Balanzo.run(input.value).text;
+    const result = Balanzo.run(input.value);
+    report.textContent = result.text;
+    calculatedOk = result.ok;
     report.classList.remove('placeholder');
     calculatedText = input.value;
     updateStale();
@@ -132,7 +147,8 @@ ben 30 ben cy</code>
     if (calculatedText === null) return;
     const stale = input.value !== calculatedText;
     report.classList.toggle('stale', stale);
-    status.textContent = stale ? 'Text changed. Press Calculate to update the report.' : 'Report updated.';
+    if (stale) status.textContent = 'Text changed. Press Calculate to update the report.';
+    else status.textContent = calculatedOk ? 'Report updated.' : 'No report yet. Fix the line named under WARNINGS, then press Calculate.';
   }
 
   // Download needs a calculation first, and some text to save; otherwise it would save an empty file
@@ -143,6 +159,7 @@ ben 30 ben cy</code>
   input.addEventListener('input', () => {
     updateStale();
     updateDownload();
+    saveDraft();
   });
 
   // Title slug and local date-time, e.g. dinner-2026-11-14-2130.txt
@@ -168,6 +185,7 @@ ben 30 ben cy</code>
   function loadText(text) {
     input.value = text;
     calculate();
+    saveDraft();
   }
 
   // Shared by the file picker and drag and drop
@@ -181,6 +199,7 @@ ben 30 ben cy</code>
     loadText(await file.text());
   }
 
+  document.getElementById('load').addEventListener('click', () => document.getElementById('file').click());
   document.getElementById('file').addEventListener('change', (event) => {
     if (event.target.files[0]) loadFile(event.target.files[0]);
     event.target.value = '';  // lets the same file be loaded again
@@ -222,6 +241,7 @@ ben 30 ben cy</code>
       range.selectNodeContents(report);
       getSelection().removeAllRanges();
       getSelection().addRange(range);
+      status.textContent = 'Copying is blocked here. The report is selected: press Ctrl+C or ⌘+C to copy it.';
       return;
     }
     setTimeout(() => { button.textContent = 'Copy report'; }, 1500);
@@ -229,6 +249,17 @@ ben 30 ben cy</code>
 
   // The report first, then the expenses it was made from, so the file explains itself
   download.addEventListener('click', () => {
+    // Download must match the report on screen, so an out-of-date or failed report is not saved
+    if (!calculatedOk || calculatedText !== input.value) {
+      status.textContent = calculatedOk
+        ? 'Not downloaded: the report on screen is out of date. Press Calculate first, then Download.'
+        : 'Not downloaded: there is no report yet. Fix the line named under WARNINGS, press Calculate, then Download.';
+      const calc = document.getElementById('calculate');
+      calc.classList.remove('nudge');
+      void calc.offsetWidth;  // restart the highlight
+      calc.classList.add('nudge');
+      return;
+    }
     const text = `${Balanzo.run(input.value).text}\nEXPENSES - the expenses behind this report\n${input.value}`;
     const url = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
     const link = document.createElement('a');
@@ -236,6 +267,93 @@ ben 30 ben cy</code>
     link.download = downloadName();
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+
+  // Draft: the text in the box, kept on this device. It is saved 0.5 seconds after the last change,
+  // restored on the next visit, and dropped after 30 days without an edit or when the box is emptied.
+  const DRAFT_KEY = 'balanzo-draft';
+  const DRAFT_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
+  const draftNote = document.getElementById('draft');
+  let draftTimer = null;
+
+  const clock = (date) => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+
+  function saveDraft() {
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(writeDraft, 500);
+  }
+
+  function writeDraft() {
+    clearTimeout(draftTimer);
+    draftTimer = null;
+    try {
+      if (input.value.trim() === '') {
+        localStorage.removeItem(DRAFT_KEY);
+        draftNote.textContent = '';
+      } else {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({ text: input.value, savedAt: Date.now() }));
+        draftNote.textContent = `Draft saved on this device at ${clock(new Date())}.`;
+      }
+    } catch {
+      draftNote.textContent = 'Draft not saved: this browser does not allow local storage here.';
+    }
+  }
+
+  function restoreDraft() {
+    try {
+      const draft = JSON.parse(localStorage.getItem(DRAFT_KEY));
+      if (!draft || Date.now() - draft.savedAt > DRAFT_MAX_AGE) {
+        localStorage.removeItem(DRAFT_KEY);
+        return;
+      }
+      input.value = draft.text;
+      calculate();
+      draftNote.textContent = `Draft restored from ${clock(new Date(draft.savedAt))}.`;
+    } catch {
+      // Nothing usable saved: start with the empty box
+    }
+  }
+
+  // A change made just before the tab closes is still saved
+  window.addEventListener('pagehide', () => {
+    if (draftTimer) writeDraft();
+  });
+
+  restoreDraft();
+
+  // Bump APP_VERSION with each release, together with docs/version.json and CHANGELOG.md
+  const APP_VERSION = '5.0.0';
+  const updateBar = document.getElementById('update');
+  const updateText = document.getElementById('update-text');
+  document.getElementById('update-reload').addEventListener('click', () => location.reload());
+
+  // True when version a is newer than version b, comparing 1.2.3 numbers part by part
+  const newerThan = (a, b) => {
+    const [x, y] = [a, b].map((v) => v.split('.').map(Number));
+    for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] > y[i];
+    return false;
+  };
+
+  // Asks docs/version.json, which the network serves fresh, so a tab that is already open learns
+  // about a new release. Offline, the cached copy can be older, and is then ignored.
+  async function checkForUpdate() {
+    try {
+      const latest = await (await fetch('version.json', { cache: 'no-store' })).json();
+      if (!newerThan(latest.version, APP_VERSION)) return false;
+      updateText.textContent = latest.breaking
+        ? `Balanzo ${latest.version} changes how things work: ${latest.summary} Reload before you calculate.`
+        : `Balanzo ${latest.version} is ready. Reload to get the latest version.`;
+      updateBar.hidden = false;
+      return true;
+    } catch {
+      return false;  // offline, or the file is missing: nothing to announce
+    }
+  }
+
+  checkForUpdate();
+  setInterval(checkForUpdate, 60 * 60 * 1000);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) checkForUpdate();
   });
 
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');

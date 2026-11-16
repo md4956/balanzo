@@ -61,6 +61,9 @@ class WebPortMatchesScriptTest(unittest.TestCase):
     def test_two_currencies(self):
         self.assertSameOutput("# Trip, two currencies\n@EUR\nnik 50 nik eva\nana 30 ana eva\n@\nbob 40 bob cy\n")
 
+    def test_names_in_other_case_and_the_preview(self):
+        self.assertSameOutput("ana 60 ana Ben\nAna 30 ben\nsam 900 SAM ana ana lia\n@EUR\nNik 5 nik\n")
+
     def test_warnings_and_skipped_lines(self):
         self.assertSameOutput(
             "# Trip_ *x\n"
