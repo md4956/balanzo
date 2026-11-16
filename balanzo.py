@@ -149,6 +149,17 @@ def main():
     currency = ''
     title = ''
     warnings = []  # shown in a WARNINGS block after the report
+    spellings = {}  # lower-case name -> the spelling shown, the first one written
+    noted = set()   # spellings that already have a Note
+    expenses = []   # each expense as read, for the HOW I READ IT block
+
+    def shown(name, line):
+        # Names ignore upper and lower case, so the first spelling written is the one shown
+        spellings.setdefault(name.lower(), name)
+        if spellings[name.lower()] != name and name not in noted:
+            noted.add(name)
+            warnings.append(f"Note: '{name}' is counted as '{spellings[name.lower()]}', because names ignore upper and lower case: {line}")
+        return spellings[name.lower()]
 
     try:
         # utf-8-sig skips the byte-order mark some editors add at the start of the file
@@ -196,10 +207,13 @@ def main():
                 if any('_' in name for name in names):
                     warnings.append(f"Warning: '_' in a name can turn text italic in messengers: {line}")
 
+                payer = shown(payer, line)
+                related_to = [shown(person, line) for person in related_to]
                 share = amount / len(related_to)
                 balances[currency][payer] += amount
                 for person in related_to:
                     balances[currency][person] -= share
+                expenses.append((currency, payer, amount, related_to))
 
     except FileNotFoundError:
         print(f"File {filename} not found.")
@@ -222,6 +236,13 @@ def main():
             blocks += report_blocks(person_balances, settle(person_balances, warnings), unit, label)
     else:
         blocks.append([HINT])
+
+    if expenses:
+        read = []
+        for currency, payer, amount, people in expenses:
+            suffix = f" {currency}" if currency else ""
+            read.append(f"{payer} paid {amount:,.2f}{suffix}, split between {', '.join(people)}")
+        blocks.append(["HOW I READ IT", *read])
 
     if warnings:
         blocks.append(["WARNINGS", *warnings])

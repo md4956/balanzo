@@ -165,8 +165,22 @@
     const warnings = [];
     const print = (s) => warnings.push(s);
     const balances = new Map();  // currency -> Map(person -> balance)
+    const spellings = new Map();  // lower-case name -> the spelling shown, the first one written
+    const noted = new Set();      // spellings that already have a Note
+    const expenses = [];          // each expense as read, for the HOW I READ IT block
     let currency = '';
     let title = '';
+
+    function shown(name, line) {
+      // Names ignore upper and lower case, so the first spelling written is the one shown
+      if (!spellings.has(name.toLowerCase())) spellings.set(name.toLowerCase(), name);
+      const first = spellings.get(name.toLowerCase());
+      if (first !== name && !noted.has(name)) {
+        noted.add(name);
+        print(`Note: '${name}' is counted as '${first}', because names ignore upper and lower case: ${line}`);
+      }
+      return first;
+    }
 
     const lines = text.replace(/^﻿/, '').split(/\r\n|\r|\n/);
     for (let index = 0; index < lines.length; index++) {
@@ -216,11 +230,14 @@
         print(`Warning: '_' in a name can turn text italic in messengers: ${line}`);
       }
 
-      const share = amount / relatedTo.length;
+      const shownPayer = shown(payer, line);
+      const shownPeople = relatedTo.map((person) => shown(person, line));
+      const share = amount / shownPeople.length;
       if (!balances.has(currency)) balances.set(currency, new Map());
       const current = balances.get(currency);
-      current.set(payer, (current.get(payer) || 0) + amount);
-      for (const person of relatedTo) current.set(person, (current.get(person) || 0) - share);
+      current.set(shownPayer, (current.get(shownPayer) || 0) + amount);
+      for (const person of shownPeople) current.set(person, (current.get(person) || 0) - share);
+      expenses.push({ currency, payer: shownPayer, amount, people: shownPeople });
     }
 
     const blocks = [];
@@ -240,6 +257,13 @@
       }
     } else {
       blocks.push([HINT]);
+    }
+    if (expenses.length) {
+      const read = expenses.map(({ currency: unit, payer, amount, people }) => {
+        const suffix = unit ? ` ${unit}` : '';
+        return `${payer} paid ${money(amount)}${suffix}, split between ${people.join(', ')}`;
+      });
+      blocks.push(['HOW I READ IT', ...read]);
     }
     if (warnings.length) blocks.push(['WARNINGS', ...warnings]);
     return { text: emit(blocks), ok: true };

@@ -2,6 +2,21 @@
 
 All notable changes to this project are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and version numbers follow [Semantic Versioning](https://semver.org/). Versions before 1.0.0 may change behavior in a minor release.
 
+## [5.0.0] - 2026-11-16
+
+### Changed
+- Breaking: names ignore upper and lower case, so `Ana` and `ana` are one person, shown with the first spelling written. A Note under WARNINGS says when this happens. A file that used different capitals for different people will now give different results.
+- Clearer messages for skipped lines, invalid currencies, `#` right after a name, and `*` or `~` in a name. The `*` or `~` error now says that no report was made.
+- On the web page, the status line says `No report yet` when the last calculation stopped with an error, instead of `Report updated.`
+- On the web page, the layout fills the window on tablets and desktops, so nothing scrolls on a laptop, tablet or landscape phone. On phones, Calculate stays on screen.
+- On the web page, the app icon is a `D` for now, until a proper icon is made.
+- On the web page, the offline cache includes the apple-touch icon, and its version is bumped so the new files are used.
+
+### Added
+- `HOW I READ IT` after the summary: each expense as the script understood it, so you can check the file was read correctly.
+- On the web page, a draft of the box is kept on this device. It is restored on the next visit, dropped when the box is emptied, and dropped after 30 days without an edit.
+- On the web page, `Load .txt or .md` is a button, so it works from the keyboard.
+
 ## [4.0.0] - 2026-11-16
 
 ### Changed

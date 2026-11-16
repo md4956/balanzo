@@ -18,6 +18,8 @@ The same tool runs as a web page: **https://md4956.github.io/balanzo/** (the `do
 
 **Download** saves a `.txt` or `.md` file, matching the file you loaded. It starts with the report, then an `EXPENSES` heading and the expenses it was made from. Download is off until you tap Calculate, and while the box is empty. The page works offline after the first visit. To keep it on the home screen, use "Add to Home Screen" in Safari or Chrome.
 
+**Draft:** the text in the box is kept on this device as you type, and it is back the next time you open the page. Emptying the box clears it, and a draft that has not been edited for 30 days is dropped. Nothing is sent anywhere, but on a shared computer, empty the box when you are done.
+
 The page shows the same report as the script. How to write the expenses is explained in [Quick start](#quick-start) and [Input format](#input-format).
 
 ## Quick start
@@ -65,6 +67,10 @@ Ben owes 5.00
 Chloe owes 35.00
 
 3 people, 2 payments, total 0.00
+
+HOW I READ IT
+Anna paid 60.00, split between Anna, Ben, Chloe
+Ben paid 30.00, split between Ben, Chloe
 ```
 
 - The first line of the file becomes the title.
@@ -87,6 +93,7 @@ Other rules:
 
 - **File type:** only `.txt` and `.md` files are accepted, and any other file (including one without an extension) stops with `Unsupported file type`. `.txt` and `.md` files are read the same way. In a `.md` file, don't use Markdown syntax for expenses: a list bullet (`- Anna 60 Anna Ben`) or a code fence (```` ``` ````) is read as plain text, so the line is skipped and listed under WARNINGS.
 - **Names** can be separated by spaces, commas or both: `Lukas 640.5 Lukas Emma Marco,Olivia` and `Lukas 640.5 Lukas, Emma, Marco, Olivia` mean the same thing.
+- **Names ignore upper and lower case.** `Jake` and `jake` are one person, shown with the first spelling written. A Note under WARNINGS says when this happens.
 - **Repeated names** get more shares. `Jake 900 Jake Anna Anna Lena` splits 900 into four parts, and Anna owes two of them. Numbers are allowed in names, so `Mia1 Mia2 Mia3` are three people.
 - **Decimals** work: `362.75`. Amounts that aren't finite numbers (`nan`, `inf`, `1e999`) are rejected.
 - **Comments:** `#` starts a comment, and everything after it on that line is ignored. A comment can take a whole line or follow an expense: `Daniel 210 Mia1 Mia2 Mia3 # the Mias are cousins`.
@@ -138,6 +145,11 @@ Tyler gets 20.00
 Chloe owes 20.00
 
 2 people, 1 payment, total 0.00
+
+HOW I READ IT
+Lukas paid 50.00 EUR, split between Lukas, Emma
+Anna paid 30.00 EUR, split between Anna, Emma
+Tyler paid 40.00, split between Tyler, Chloe
 ```
 
 Expenses before the first `@` line, and after an `@` line with nothing after it, use plain numbers. Plain numbers always come last, under the `NO CURRENCY` heading.
@@ -177,6 +189,18 @@ Ben owes 842.33
 Olivia owes 931.79
 
 10 people, 9 payments, total 0.00
+
+HOW I READ IT
+Lena paid 1,250.00, split between Lena, Lukas, Jake, Ben
+Lukas paid 640.50, split between Lukas, Emma, Marco, Olivia
+Jake paid 2,100.00, split between Jake, Olivia, Ben, Mateo
+Emma paid 980.00, split between Emma, Hannah, Marco
+Marco paid 415.00, split between Mateo
+Ben paid 362.75, split between Ben, Lukas, Jake
+Hannah paid 1,480.00, split between Hannah, Ben, Emma, Olivia, Mateo, Anna
+Mateo paid 528.00, split between Mateo, Marco, Hannah
+Olivia paid 297.00, split between Olivia
+Jake paid 900.00, split between Jake, Anna, Anna, Lena
 ```
 
 How to read the output:
@@ -185,11 +209,12 @@ How to read the output:
 - If nothing is owed, the payments section says `Everyone is settled.`
 - **BALANCES** lists everyone, largest first. `gets` means the person should receive money, and `owes` means they should pay. A person with nothing to settle shows `is settled`.
 - The last line gives the number of people and payments, and the total. The total should always be `0.00`, because every expense takes money from the people who share it and gives it to the payer. If it isn't, the script has a calculation bug, not a problem with your input.
+- **HOW I READ IT** comes after the summary and lists each expense the way the script understood it, one per line. Check it against your file: if an amount, payer or name is wrong, the line you wrote does not say what you meant. Plain text such as `Notes: 100 euros total` shows up here as an expense.
 - **WARNINGS**, when there are any, comes last. It lists the lines that were skipped and the notes about names and the title, each followed by the line it is about. See [When something looks wrong](#when-something-looks-wrong).
 
 The output is plain text with short lines and no decoration, so it reads the same when pasted into a messenger or viewed on a narrow phone screen. The web page, the file and the command line all print this same format.
 
-The format is versioned. This README describes version 4.0.0 (see the [changelog](CHANGELOG.md)).
+The format is versioned. This README describes version 5.0.0 (see the [changelog](CHANGELOG.md)).
 
 ## When something looks wrong
 
@@ -203,6 +228,7 @@ Every message under WARNINGS names the line it is about, so find that line and f
 | `Invalid currency: ...` | Use one code, such as `@EUR`, or `@` on its own. The line is skipped. |
 | `Warning: '#' right after a name starts a comment, so the rest of the line is ignored` | Names can't contain `#`. Remove it from the name. Everything after a `#` is ignored, so the expense is read only up to it. |
 | `Error: '*' and '~' are not allowed in names. No report was made.` | Remove the `*` or `~` and run again. Nothing is printed except the warnings. |
+| `Note: 'Ana' is counted as 'ana' ...` | Names ignore upper and lower case. If that is not what you meant, use a different name for the other person. |
 | `Note: more than 18 people ...` | The payments are correct, but there may be more of them than the fewest possible. |
 
 On the web page, the status line says `No report yet` when the report stopped with an error, and `Report updated.` only when it is complete.
@@ -222,7 +248,7 @@ To publish a new version, in the same pull request:
 ## Limitations
 
 - Splits are always equal, apart from naming someone more than once.
-- Names are case-sensitive.
+- Names ignore upper and lower case (see [Input format](#input-format)).
 - The fewest payments are only guaranteed for up to 18 people with a balance to settle. Above that, the exact search would take too long, so the script adds a note to WARNINGS and uses a faster method that may list extra payments.
 - Amounts are plain floats, shown rounded to two decimals with thousands separators (`1,816.58`).
 - The script doesn't convert between currencies.
