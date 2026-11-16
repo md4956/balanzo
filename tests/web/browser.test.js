@@ -342,6 +342,41 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
         assert.ok(main <= 1200, 'main content should stop at 1200px');
       });
 
+      it('fills the window up to 1200px on desktop, whatever the content', async () => {
+        for (const [width, expected] of [[900, 900], [1280, 1200]]) {
+          const { page } = await openApp(width, 800);
+          const main = await page.eval("document.querySelector('main').getBoundingClientRect().width");
+          assert.equal(Math.round(main), expected, `main at ${width}px wide`);
+        }
+      });
+
+      it('keeps the panel widths when How it works opens', async () => {
+        for (const [width, mobile] of [[1280, false], [390, true]]) {
+          const { page } = await openApp(width, 800, mobile);
+          const widths = "[...document.querySelectorAll('#input, #report')].map((el) => Math.round(el.getBoundingClientRect().width)).join()";
+          const closed = await page.eval(widths);
+          await page.click('.guide summary');
+          assert.equal(await page.eval("document.querySelector('.guide').open"), true);
+          assert.equal(await page.eval(widths), closed, `panels at ${width}px wide`);
+        }
+      });
+
+      it('keeps the button widths when Copy report changes to Copied', async () => {
+        for (const [width, mobile] of [[1280, false], [390, true], [320, true]]) {
+          const { page } = await openApp(width, 800, mobile);
+          const widths = "[...document.querySelectorAll('.row button')].map((el) => Math.round(el.getBoundingClientRect().width)).join()";
+          const before = await page.eval(widths);
+          await page.eval("document.getElementById('copy').textContent = 'Copied'");
+          assert.equal(await page.eval(widths), before, `buttons at ${width}px wide`);
+        }
+      });
+
+      it('keeps every button label on one line on a 320px phone', async () => {
+        const { page } = await openApp(320, 640, true);
+        const heights = await page.eval("[...document.querySelectorAll('.row button')].map((el) => Math.round(el.getBoundingClientRect().height))");
+        assert.equal(new Set(heights).size, 1, `button heights differ: ${heights}`);
+      });
+
       it('makes every button at least 44px tall on a phone', async () => {
         const { page } = await openApp(390, 844, true);
         const heights = await page.eval("[...document.querySelectorAll('button:not(#update-reload), label.button')].map((el) => el.getBoundingClientRect().height)");
