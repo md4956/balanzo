@@ -2,6 +2,11 @@
 
 All notable changes to this project are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and version numbers follow [Semantic Versioning](https://semver.org/). Versions before 1.0.0 may change behavior in a minor release.
 
+## [5.0.4] - 2026-11-17
+
+### Changed
+- On the web page, the How it works example uses full names (`Anna`, `Ben`, `Chloe`), like the input box and the README.
+
 ## [5.0.3] - 2026-11-16
 
 ### Fixed
