@@ -687,10 +687,10 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
 
       it('tells an open page about a newer version', async () => {
         const { page } = await openApp(1280, 800);
-        await page.eval("window.fetch = async () => ({ json: async () => ({ version: '5.1.0', breaking: false, summary: '' }) })");
+        await page.eval("window.fetch = async () => ({ json: async () => ({ version: '99.0.0', breaking: false, summary: '' }) })");
         assert.equal(await page.eval('checkForUpdate()'), true);
         assert.equal(await page.eval("document.getElementById('update').hidden"), false);
-        assert.equal(await page.eval("document.getElementById('update-text').textContent"), 'Balanzo 5.1.0 is ready. Reload to get the latest version.');
+        assert.equal(await page.eval("document.getElementById('update-text').textContent"), 'Balanzo 99.0.0 is ready. Reload to get the latest version.');
       });
 
       it('says what changed when the newer version is breaking', async () => {
@@ -890,6 +890,15 @@ for (const [name, executable] of [['Chrome', CHROME], ['Microsoft Edge', EDGE]])
         await page.click('#download');
         const [name] = await waitForDownload(downloads);
         assert.match(name, /^expenses-\d{4}-\d{2}-\d{2}-\d{4}\.txt$/);
+      });
+
+      it('names the download from the title after a Telegram sender line', async () => {
+        const { page, downloads } = await openApp(1280, 800);
+        await page.setInput('> Mahdi, [18.11.2026 10:00]\n# Dinner\nana 1 ana ben');
+        await page.click('#calculate');
+        await page.click('#download');
+        const [name] = await waitForDownload(downloads);
+        assert.match(name, /^Dinner-\d{4}-\d{2}-\d{2}-\d{4}\.txt$/);
       });
 
       it('downloads a loaded .md file as a .md file', async () => {

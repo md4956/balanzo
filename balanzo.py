@@ -164,14 +164,10 @@ def main():
     try:
         # utf-8-sig skips the byte-order mark some editors add at the start of the file
         with open(filename, 'r', encoding='utf-8-sig') as file:
-            first = True  # the first line that is not skipped can be the title
-            for raw_line in file:
-                # '>' starts the sender line Telegram adds when messages are copied, so the line is skipped
-                if raw_line.lstrip().startswith('>'):
-                    continue
-                if first and raw_line.lstrip().startswith('#'):
+            # '>' starts the sender line Telegram adds when messages are copied, so those lines are skipped
+            for index, raw_line in enumerate(line for line in file if not line.lstrip().startswith('>')):
+                if index == 0 and raw_line.lstrip().startswith('#'):
                     title = raw_line.lstrip()[1:].strip()
-                first = False
                 head, comment_start, _ = raw_line.partition('#')
                 line = head.strip()
                 if comment_start and head[-1:] not in ('', ' ', '\t'):
