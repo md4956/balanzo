@@ -164,7 +164,8 @@ def main():
     try:
         # utf-8-sig skips the byte-order mark some editors add at the start of the file
         with open(filename, 'r', encoding='utf-8-sig') as file:
-            for index, raw_line in enumerate(file):
+            # '>' starts the sender line Telegram adds when messages are copied, so those lines are skipped
+            for index, raw_line in enumerate(line for line in file if not line.lstrip().startswith('>')):
                 if index == 0 and raw_line.lstrip().startswith('#'):
                     title = raw_line.lstrip()[1:].strip()
                 head, comment_start, _ = raw_line.partition('#')

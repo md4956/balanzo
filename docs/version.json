@@ -1,5 +1,5 @@
 {
-  "version": "5.0.5",
+  "version": "5.1.0",
   "breaking": false,
-  "summary": "The app icon shows a B, for Balanzo."
+  "summary": "Lines starting with > are skipped, so expenses copied from Telegram paste cleanly."
 }

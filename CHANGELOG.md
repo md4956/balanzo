@@ -2,6 +2,11 @@
 
 All notable changes to this project are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and version numbers follow [Semantic Versioning](https://semver.org/). Versions before 1.0.0 may change behavior in a minor release.
 
+## [5.1.0] - 2026-11-18
+
+### Added
+- Lines starting with `>` are skipped without a warning, so expenses copied from Telegram, which start each sender line with `>`, can be pasted as they are. A `# title` right after such lines still becomes the report title, and the web page uses it for the download file name.
+
 ## [5.0.5] - 2026-11-17
 
 ### Changed

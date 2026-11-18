@@ -230,6 +230,15 @@ class InputParsingTests(unittest.TestCase):
         self.assertNotIn("Invalid", stdout)
         self.assertIn("eva pays nik 5.00", stdout)
 
+    def test_lines_starting_with_greater_than_are_skipped_silently(self):
+        # Telegram starts the sender line with '>' when messages are copied
+        stdout, code = run_script("> Mahdi, [18.11.2026 10:00]\n# Dinner\n  > nik:\nnik 10 nik eva\n")
+        self.assertEqual(code, 0)
+        self.assertTrue(stdout.startswith("Dinner\n"))
+        self.assertIn("eva pays nik 5.00", stdout)
+        self.assertNotIn("WARNINGS", stdout)
+        self.assertNotIn("Mahdi", stdout)
+
     def test_inline_comment_after_expense(self):
         stdout, _ = run_script("nik 10 nik eva # lunch\n")
         self.assertIn("eva pays nik 5.00", stdout)

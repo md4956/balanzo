@@ -173,7 +173,7 @@ Ben 30 Ben Chloe</code>
 
   // Title slug and local date-time, e.g. dinner-2026-11-14-2130.txt
   function downloadName() {
-    const firstLine = input.value.split('\n')[0];
+    const firstLine = input.value.split('\n').find((line) => !/^﻿?\s*>/.test(line)) || '';
     const title = /^﻿?\s*#/.test(firstLine) ? firstLine.replace(/^﻿?\s*#/, '').trim() : '';
     const slug = title.replace(/[\\/:*?"<>|\x00-\x1f]+/g, '').trim().replace(/\s+/g, '-').slice(0, 60);
     const now = new Date();
@@ -331,7 +331,7 @@ Ben 30 Ben Chloe</code>
   restoreDraft();
 
   // Bump APP_VERSION with each release, together with docs/version.json and CHANGELOG.md
-  const APP_VERSION = '5.0.5';
+  const APP_VERSION = '5.1.0';
   const updateBar = document.getElementById('update');
   const updateText = document.getElementById('update-text');
   document.getElementById('update-reload').addEventListener('click', () => location.reload());
