@@ -62,6 +62,7 @@ The amount is split equally between the people listed. The payer only gets a sha
 
 - **Title:** a `# comment` on the first line becomes the report title.
 - **Comments:** `#` starts a comment, on its own line or after an expense.
+- **Pasted from Telegram:** lines starting with `>`, such as the sender line Telegram adds when you copy messages, are skipped without a warning. A title can come right after them.
 - **Names** can be separated by spaces or commas. Case is ignored (`Jake` = `jake`). Naming someone twice gives them two shares.
 - **Names can't contain `#`, `*` or `~`.** Avoid `_` too: messengers may turn it into italics.
 - **Amounts** are plain numbers, decimals allowed: `362.75`.
@@ -211,7 +212,7 @@ The browser tests need Node.js 22+ and run in Chrome and Edge (set `CHROME_PATH`
 
 ### Releasing
 
-This README describes version 5.0.5 (see the [changelog](CHANGELOG.md)).
+This README describes version 5.1.0 (see the [changelog](CHANGELOG.md)).
 
 Merging a new version to `main` creates its [GitHub release](https://github.com/mdortaj/balanzo/releases) automatically. In the same pull request:
 

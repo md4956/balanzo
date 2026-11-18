@@ -183,9 +183,12 @@
     }
 
     const lines = text.replace(/^﻿/, '').split(/\r\n|\r|\n/);
-    for (let index = 0; index < lines.length; index++) {
-      const rawLine = lines[index];
-      if (index === 0 && rawLine.trimStart().startsWith('#')) title = rawLine.trimStart().slice(1).trim();
+    let first = true; // the first line that is not skipped can be the title
+    for (const rawLine of lines) {
+      // '>' starts the sender line Telegram adds when messages are copied, so the line is skipped
+      if (rawLine.trimStart().startsWith('>')) continue;
+      if (first && rawLine.trimStart().startsWith('#')) title = rawLine.trimStart().slice(1).trim();
+      first = false;
       const hashAt = rawLine.indexOf('#');
       const head = hashAt === -1 ? rawLine : rawLine.slice(0, hashAt);
       const line = head.trim();
